@@ -714,48 +714,89 @@ function formatContent(text) {
 }
 
 // ── Processing Steps Indicator ────────────────────────────────────────────
-// Simulates the real backend pipeline visually while waiting for response
+// Each step is a collapsible dropdown showing what it does
 
 const STEP_SEQUENCES = {
-  // Used before intent is known
   default: [
-    {icon:'shield-check',     label:'Checking security…',          ms:600},
-    {icon:'cpu',              label:'Classifying intent…',         ms:1800},
-    {icon:'search',           label:'Searching knowledge base…',   ms:2800},
-    {icon:'database',         label:'Querying LIMS database…',     ms:4200},
-    {icon:'stars',            label:'Generating response…',        ms:5500},
+    {
+      icon:'shield-check', label:'Checking security',
+      detail:'Scanning for prompt injection (15 patterns), validating message length, checking RBAC permissions for your role.',
+      color:'var(--success)'
+    },
+    {
+      icon:'cpu', label:'Classifying intent',
+      detail:'Sending your message to Ollama with the INTENT_PROMPT. Ollama returns: knowledge | database | hybrid | general with a confidence score.',
+      color:'var(--accent)'
+    },
+    {
+      icon:'search', label:'Searching knowledge base',
+      detail:'Embedding your question into a 384-dim vector using sentence-transformers/all-MiniLM-L6-v2. Running cosine similarity search against ChromaDB. Retrieving top-5 matching SOP/manual chunks.',
+      color:'#a78bfa'
+    },
+    {
+      icon:'database', label:'Querying LIMS database',
+      detail:'Sending your question + SampleManager schema to Ollama to generate Oracle SQL. Validating SQL safety (12 blocked patterns). Executing against Oracle RDS via oracledb thin mode (read-only).',
+      color:'var(--warning)'
+    },
+    {
+      icon:'stars', label:'Generating response',
+      detail:'Building SYNTHESIS_PROMPT with: your question + RAG chunks + DB results + last 6 conversation turns + your role. Sending to Ollama to write the final answer.',
+      color:'var(--accent)'
+    },
   ],
   knowledge: [
-    {icon:'shield-check',     label:'Security check passed',       ms:400},
-    {icon:'cpu',              label:'Intent: knowledge query',      ms:1200},
-    {icon:'search',           label:'Searching SOPs & manuals…',   ms:2200},
-    {icon:'file-text',        label:'Retrieving relevant chunks…', ms:3400},
-    {icon:'stars',            label:'Composing answer…',           ms:4600},
+    {icon:'shield-check', label:'Security check passed', color:'var(--success)',
+     detail:'Message length OK. No injection patterns detected. RBAC role verified. Safe to proceed.'},
+    {icon:'cpu', label:'Intent: knowledge query', color:'var(--accent)',
+     detail:'Ollama classified this as a KNOWLEDGE query (confidence: high). Routing to Document Agent for RAG retrieval.'},
+    {icon:'search', label:'Searching SOPs & manuals', color:'#a78bfa',
+     detail:'Converting question to 384-dim embedding vector. Searching ChromaDB collection "lab_documents" for similar chunks. Filtering results with similarity threshold ≥ 0.3.'},
+    {icon:'file-text', label:'Retrieving relevant chunks', color:'#a78bfa',
+     detail:'Found matching document chunks. Formatting with source citations: [Source N: filename, Page X]. Preparing context for synthesis.'},
+    {icon:'stars', label:'Composing answer', color:'var(--accent)',
+     detail:'Injecting RAG context into SYNTHESIS_PROMPT. Calling Ollama (temperature=0.1) to write the final answer with citations.'},
   ],
   database: [
-    {icon:'shield-check',     label:'Security check passed',       ms:400},
-    {icon:'cpu',              label:'Intent: database query',      ms:1200},
-    {icon:'code-square',      label:'Generating SQL…',             ms:2400},
-    {icon:'database-check',   label:'Querying Oracle LIMS…',       ms:3800},
-    {icon:'stars',            label:'Summarising results…',        ms:5200},
+    {icon:'shield-check', label:'Security check passed', color:'var(--success)',
+     detail:'Message length OK. No injection patterns detected. RBAC role verified. DB query permission granted.'},
+    {icon:'cpu', label:'Intent: database query', color:'var(--accent)',
+     detail:'Ollama classified this as a DATABASE query. Routing to Database Agent for NL→SQL pipeline.'},
+    {icon:'code-square', label:'Generating Oracle SQL', color:'var(--warning)',
+     detail:'Sending question + SampleManager schema (5 tables) + Oracle syntax rules + example queries to Ollama (temperature=0). Parsing the generated SQL and stripping any markdown.'},
+    {icon:'database-check', label:'Querying Oracle LIMS', color:'var(--warning)',
+     detail:'Running SQLSafetyValidator (12 forbidden patterns). Auto-adding FETCH FIRST 200 ROWS if missing. Executing via oracledb thin mode against dssm-lubsc-acc.ctmmbybjqmrj.eu-west-1.rds.amazonaws.com. Logging SQL to audit.log.'},
+    {icon:'stars', label:'Summarising results', color:'var(--accent)',
+     detail:'Sending query results (up to 20 rows) to Ollama with RESULT_SUMMARY_PROMPT. Writing human-readable summary. Injecting into SYNTHESIS_PROMPT for final answer.'},
   ],
   hybrid: [
-    {icon:'shield-check',     label:'Security check passed',       ms:400},
-    {icon:'cpu',              label:'Intent: hybrid query',        ms:1200},
-    {icon:'search',           label:'Searching knowledge base…',   ms:2200},
-    {icon:'code-square',      label:'Generating SQL…',             ms:3400},
-    {icon:'database-check',   label:'Querying Oracle LIMS…',       ms:4800},
-    {icon:'stars',            label:'Composing combined answer…',  ms:6200},
+    {icon:'shield-check', label:'Security check passed', color:'var(--success)',
+     detail:'Message length OK. No injection patterns detected. RBAC permissions verified for both document and DB access.'},
+    {icon:'cpu', label:'Intent: hybrid query', color:'var(--accent)',
+     detail:'Ollama classified this as HYBRID — needs BOTH documentation AND live data. Running Document Agent and Database Agent.'},
+    {icon:'search', label:'Searching knowledge base', color:'#a78bfa',
+     detail:'Converting question to embedding vector. Searching ChromaDB for relevant SOP/manual chunks. Retrieving top-5 results with source citations.'},
+    {icon:'code-square', label:'Generating Oracle SQL', color:'var(--warning)',
+     detail:'Sending question + schema to Ollama. Generating Oracle SELECT query. Validating safety. Adding row limit.'},
+    {icon:'database-check', label:'Querying Oracle LIMS', color:'var(--warning)',
+     detail:'Executing validated SQL against Oracle RDS (read-only). Fetching results. Summarising with Ollama. SQL logged to audit trail.'},
+    {icon:'stars', label:'Composing combined answer', color:'var(--accent)',
+     detail:'Combining RAG document chunks + database results into SYNTHESIS_PROMPT. Calling Ollama to write one coherent answer covering both procedure guidance and live data.'},
   ],
   workflow: [
-    {icon:'shield-check',     label:'Security check passed',       ms:300},
-    {icon:'diagram-3',        label:'Processing workflow step…',   ms:900},
-    {icon:'check2-circle',    label:'Validating input…',           ms:1600},
+    {icon:'shield-check', label:'Security check passed', color:'var(--success)',
+     detail:'Message length OK. No injection patterns. Workflow trigger detected.'},
+    {icon:'diagram-3', label:'Processing workflow step', color:'var(--accent)',
+     detail:'WorkflowManager.process_sync() running. Loading active WorkflowSession from database. Determining current step index.'},
+    {icon:'check2-circle', label:'Validating input', color:'var(--success)',
+     detail:'Running input validator for this step (number range / date format / yes-no / choice). Storing validated answer in WorkflowSession.collected_data. Moving to next step.'},
   ],
   general: [
-    {icon:'shield-check',     label:'Security check passed',       ms:400},
-    {icon:'cpu',              label:'Intent: general',             ms:900},
-    {icon:'stars',            label:'Generating response…',        ms:1800},
+    {icon:'shield-check', label:'Security check passed', color:'var(--success)',
+     detail:'Message length OK. No injection patterns detected.'},
+    {icon:'cpu', label:'Intent: general conversation', color:'var(--accent)',
+     detail:'Ollama classified this as GENERAL. No RAG retrieval or DB query needed.'},
+    {icon:'stars', label:'Generating response', color:'var(--accent)',
+     detail:'Calling Ollama with SYNTHESIS_PROMPT. No RAG context, no DB results. Using last 6 conversation turns for context.'},
   ],
 };
 
@@ -768,76 +809,102 @@ function showTypingIndicator() {
     <div class="message-header">
       <div class="msg-avatar ai">⚗</div>
       <span class="msg-name">LabAssist AI</span>
-      <span class="msg-timestamp" style="font-size:11px;color:var(--text-muted);margin-left:4px" id="${id}-elapsed">0s</span>
+      <span style="font-size:11px;color:var(--text-muted);margin-left:4px;font-family:var(--font-mono)" id="${id}-elapsed">0.0s</span>
     </div>
-    <div class="message-bubble ai" style="padding:12px 16px">
-      <div id="${id}-steps" style="display:flex;flex-direction:column;gap:6px;min-width:260px">
-        <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary)">
-          <span style="width:18px;text-align:center"><div class="typing-dot" style="display:inline-block"></div><div class="typing-dot" style="display:inline-block"></div><div class="typing-dot" style="display:inline-block"></div></span>
-          <span>Processing your request…</span>
-        </div>
-      </div>
+    <div class="message-bubble ai" style="padding:10px 14px">
+      <div id="${id}-steps" style="display:flex;flex-direction:column;gap:4px"></div>
     </div>`;
   document.getElementById('messagesContainer').appendChild(el);
   scrollToBottom();
 
-  // Start elapsed timer
-  const startTime = Date.now();
-  const elapsedTimer = setInterval(() => {
-    const elEl = document.getElementById(`${id}-elapsed`);
-    if (!elEl) { clearInterval(elapsedTimer); return; }
-    const s = ((Date.now() - startTime) / 1000).toFixed(1);
-    elEl.textContent = `${s}s`;
+  // Elapsed timer
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    const e = document.getElementById(`${id}-elapsed`);
+    if (!e) { clearInterval(timer); return; }
+    e.textContent = ((Date.now()-t0)/1000).toFixed(1)+'s';
   }, 100);
-  el._elapsedTimer = elapsedTimer;
+  el._elapsedTimer = timer;
 
-  // Animate steps — start with default sequence
   _animateSteps(id, 'default');
-
   return id;
 }
 
-function updateTypingSteps(id, intent) {
-  // Called once we know the intent (if we had streaming — for future use)
-  _animateSteps(id, intent || 'default');
-}
-
 function _animateSteps(id, sequence) {
-  const stepsEl = document.getElementById(`${id}-steps`);
-  if (!stepsEl) return;
-
   const steps = STEP_SEQUENCES[sequence] || STEP_SEQUENCES.default;
   const completed = [];
 
   steps.forEach((step, i) => {
     setTimeout(() => {
-      const stepsEl2 = document.getElementById(`${id}-steps`);
-      if (!stepsEl2) return;
-
+      const container = document.getElementById(`${id}-steps`);
+      if (!container) return;
       completed.push(step);
-      let html = '';
-      completed.forEach((s, idx) => {
-        const isLast = idx === completed.length - 1;
-        const isDone = !isLast;
-        html += `
-          <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;
-                      color:${isDone ? 'var(--text-muted)' : 'var(--text-primary)'};
-                      transition:all .3s">
-            <span style="width:18px;text-align:center;font-size:13px;color:${isDone ? 'var(--success)' : 'var(--accent)'}">
-              <i class="bi bi-${isDone ? 'check-lg' : s.icon}"></i>
-            </span>
-            <span style="${isDone ? 'text-decoration:none;' : 'font-weight:500;'}">${s.label}</span>
-            ${isLast && !isDone ? `<span style="display:inline-flex;gap:3px;margin-left:4px">
-              <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);display:inline-block;animation:typing-bounce 1.2s ease-in-out infinite"></span>
-              <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);display:inline-block;animation:typing-bounce 1.2s ease-in-out .2s infinite"></span>
-              <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);display:inline-block;animation:typing-bounce 1.2s ease-in-out .4s infinite"></span>
-            </span>` : ''}
+
+      container.innerHTML = completed.map((s, idx) => {
+        const isLast   = idx === completed.length - 1;
+        const isDone   = !isLast;
+        const dotId    = `${id}-dot-${idx}`;
+        const bodyId   = `${id}-body-${idx}`;
+
+        return `
+          <div style="border:1px solid var(--border);border-radius:7px;overflow:hidden;
+                      background:${isDone?'transparent':'var(--bg-hover)'}">
+            <!-- Header row — click to toggle -->
+            <div onclick="toggleStepDetail('${bodyId}','${dotId}')"
+                 style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+                        cursor:pointer;user-select:none;transition:background .12s"
+                 onmouseover="this.style.background='var(--bg-hover)'"
+                 onmouseout="this.style.background='${isDone?'transparent':'var(--bg-hover)'}'">
+              <!-- Status icon -->
+              <span style="width:16px;text-align:center;font-size:13px;
+                           color:${isDone?'var(--success)':'var(--accent)'}">
+                <i class="bi bi-${isDone?'check-circle-fill':s.icon}"></i>
+              </span>
+              <!-- Label -->
+              <span style="flex:1;font-size:12.5px;
+                           color:${isDone?'var(--text-secondary)':'var(--text-primary)'};
+                           ${isDone?'':'font-weight:500'}">
+                ${s.label}
+              </span>
+              <!-- Bounce dots if active -->
+              ${!isDone ? `<span style="display:inline-flex;gap:3px">
+                <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);
+                             display:inline-block;animation:typing-bounce 1.2s ease-in-out infinite"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);
+                             display:inline-block;animation:typing-bounce 1.2s ease-in-out .2s infinite"></span>
+                <span style="width:4px;height:4px;border-radius:50%;background:var(--accent);
+                             display:inline-block;animation:typing-bounce 1.2s ease-in-out .4s infinite"></span>
+              </span>` : ''}
+              <!-- Chevron -->
+              <span id="${dotId}" style="font-size:11px;color:var(--text-muted);
+                                         transition:transform .2s;display:inline-block">
+                <i class="bi bi-chevron-down"></i>
+              </span>
+            </div>
+            <!-- Detail body — collapsed by default -->
+            <div id="${bodyId}" style="display:none;padding:6px 10px 8px 34px;
+                                       font-size:11.5px;color:var(--text-secondary);
+                                       line-height:1.55;border-top:1px solid var(--border);
+                                       background:var(--bg-input)">
+              ${s.detail}
+            </div>
           </div>`;
-      });
-      stepsEl2.innerHTML = html;
+      }).join('');
+
       scrollToBottom();
     }, step.ms);
   });
+}
+
+function toggleStepDetail(bodyId, chevronId) {
+  const body    = document.getElementById(bodyId);
+  const chevron = document.getElementById(chevronId);
+  if (!body) return;
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  if (chevron) {
+    chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
 }
 
 function hideTypingIndicator(id) {
