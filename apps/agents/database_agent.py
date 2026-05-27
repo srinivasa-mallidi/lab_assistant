@@ -103,29 +103,55 @@ TABLE: AUDIT_TRAIL
   NEW_VALUE        VARCHAR(MAX)
 """
 
-NL_TO_SQL_PROMPT = """You are a SQL expert for a SampleManager LIMS database.
-Generate a safe, READ-ONLY SQL query (SELECT only) to answer the question.
+NL_TO_SQL_PROMPT = """You are an Oracle SQL expert for a SampleManager LIMS database.
+Generate a safe, READ-ONLY Oracle SQL query (SELECT only).
 
 DATABASE ENGINE: {db_engine}
 TODAY'S DATE: {today_date}
 
 {schema}
 
-RULES:
-1. ONLY use SELECT statements - NO INSERT, UPDATE, DELETE, DROP, CREATE, ALTER, EXEC, TRUNCATE
-2. Always add a row limit (max 200 rows)
-3. Use aliases for clarity
-4. DATE SYNTAX by engine:
-   - Oracle:     SYSDATE, TRUNC(SYSDATE), SYSDATE - 7, TO_DATE(...), FETCH FIRST 200 ROWS ONLY
-   - SQL Server: GETDATE(), CAST(GETDATE() AS DATE), DATEADD(DAY,-7,GETDATE()), TOP 200
-   - PostgreSQL: NOW(), CURRENT_DATE, NOW() - INTERVAL '7 days', LIMIT 200
-5. For Oracle use FETCH FIRST N ROWS ONLY instead of ROWNUM for cleaner syntax
-6. Always filter out NULL values for key fields
-7. Use proper JOINs based on the schema
+STRICT ORACLE SYNTAX RULES:
+1. ONLY SELECT statements — NO INSERT, UPDATE, DELETE, DROP, CREATE, ALTER, EXEC
+2. Row limit: always end with FETCH FIRST 200 ROWS ONLY
+3. Oracle date functions ONLY:
+   - Today:          TRUNC(SYSDATE)
+   - Last 7 days:    SYSDATE - 7
+   - Last week:      SYSDATE - 7
+   - This month:     TRUNC(SYSDATE,'MM')
+   - Date compare:   TRUNC(RECEIVED_DATE) = TRUNC(SYSDATE)
+4. NEVER use: GETDATE(), DATEADD(), TOP N, LIMIT, ##, @variables
+5. String comparison: use single quotes only — WHERE STATUS = 'PENDING'
+6. All parentheses must be balanced — check every opening ( has a closing )
+7. No subquery without proper closing parenthesis
+
+CORRECT ORACLE EXAMPLES:
+-- Last week samples:
+SELECT SAMPLE_ID, SAMPLE_NAME, STATUS, RECEIVED_DATE
+FROM SAMPLES
+WHERE RECEIVED_DATE >= SYSDATE - 7
+ORDER BY RECEIVED_DATE DESC
+FETCH FIRST 200 ROWS ONLY
+
+-- Pending samples today:
+SELECT SAMPLE_ID, STATUS, ANALYST_ID, PRIORITY
+FROM SAMPLES
+WHERE STATUS = 'PENDING'
+AND TRUNC(RECEIVED_DATE) = TRUNC(SYSDATE)
+FETCH FIRST 200 ROWS ONLY
+
+-- Failed tests last 7 days:
+SELECT s.SAMPLE_ID, t.TEST_NAME, t.RESULT_STATUS, t.TESTED_DATE
+FROM TEST_RESULTS t
+JOIN SAMPLES s ON s.SAMPLE_ID = t.SAMPLE_ID
+WHERE t.RESULT_STATUS = 'FAIL'
+AND t.TESTED_DATE >= SYSDATE - 7
+ORDER BY t.TESTED_DATE DESC
+FETCH FIRST 200 ROWS ONLY
 
 USER QUESTION: {user_question}
 
-Generate ONLY the SQL query, nothing else. No markdown, no explanation:"""
+Generate ONLY the Oracle SQL query. No markdown, no explanation, no comments:"""
 
 
 RESULT_SUMMARY_PROMPT = """You are a laboratory data analyst. Summarize these query results clearly.
