@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LabAssist AI — Complete Technical Documentation v2</title>
+<style>
+:root{--bg:#0d0f14;--bg2:#111318;--bg3:#161921;--bg4:#1c1f28;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#e8eaf0;--text2:#8892a4;--text3:#4a5568;--accent:#3b82f6;--accent2:rgba(59,130,246,0.12);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--purple:#8b5cf6;--mono:'JetBrains Mono','Fira Code',monospace;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+[data-theme="light"]{--bg:#f0f2f7;--bg2:#fff;--bg3:#f8f9fc;--bg4:#fff;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#1a1d27;--text2:#4a5568;--text3:#9ca3af;--accent:#2563eb;--accent2:rgba(37,99,235,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:270px;min-width:270px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;transition:transform .25s}
+.sidebar.collapsed{transform:translateX(-270px)}
+.content{margin-left:270px;flex:1;transition:margin .25s}
+.content.full{margin-left:0}
+.sb-header{padding:16px 16px 12px;border-bottom:1px solid var(--border)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sb-icon{width:30px;height:30px;background:#DD1D21;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-title{font-size:14px;font-weight:700}
+.sb-sub{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.sb-nav{padding:6px 0;flex:1}
+.sb-section{padding:10px 16px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.sb-link{display:flex;align-items:center;gap:8px;padding:6px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all .12s}
+.sb-link:hover{background:var(--bg3);color:var(--text);border-left-color:var(--border2)}
+.sb-link.active{background:var(--accent2);color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.sb-link .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sb-footer{padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+.topbar{position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:50px;display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:14px;font-weight:600;flex:1}
+.btn-icon{width:30px;height:30px;border:none;background:transparent;color:var(--text2);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .12s}
+.btn-icon:hover{background:var(--bg3);color:var(--text)}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;white-space:nowrap}
+.b-blue{background:rgba(59,130,246,.15);color:#60a5fa}
+.b-green{background:rgba(16,185,129,.15);color:#34d399}
+.b-warn{background:rgba(245,158,11,.15);color:#fbbf24}
+.b-red{background:rgba(239,68,68,.15);color:#f87171}
+.b-purple{background:rgba(139,92,246,.15);color:#a78bfa}
+.b-gray{background:rgba(255,255,255,.08);color:var(--text2)}
+.b-orange{background:rgba(249,115,22,.15);color:#fb923c}
+[data-theme="light"] .b-blue{background:rgba(37,99,235,.1);color:#1d4ed8}
+[data-theme="light"] .b-green{background:rgba(5,150,105,.1);color:#065f46}
+[data-theme="light"] .b-warn{background:rgba(217,119,6,.1);color:#92400e}
+[data-theme="light"] .b-red{background:rgba(220,38,38,.1);color:#991b1b}
+[data-theme="light"] .b-purple{background:rgba(124,58,237,.1);color:#5b21b6}
+[data-theme="light"] .b-gray{background:rgba(0,0,0,.06);color:var(--text2)}
+section{padding:44px 40px;border-bottom:1px solid var(--border);scroll-margin-top:50px}
+section:last-child{border-bottom:none}
+.section-header{margin-bottom:24px}
+.section-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-family:var(--mono);margin-bottom:6px}
+h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+h3{font-size:16px;font-weight:600;margin-bottom:10px}
+h4{font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.section-desc{font-size:14px;color:var(--text2);max-width:700px;line-height:1.7}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-desc{font-size:13px;color:var(--text2);line-height:1.65}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.code{font-family:var(--mono);font-size:12px;background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:14px 16px;line-height:1.9;overflow-x:auto;white-space:pre;color:var(--text);margin-top:8px}
+.code .c-green{color:#34d399}
+.code .c-blue{color:#60a5fa}
+.code .c-yellow{color:#fbbf24}
+.code .c-red{color:#f87171}
+.code .c-gray{color:var(--text3)}
+.code .c-purple{color:#a78bfa}
+.flow-step{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.flow-step:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent2);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;border:1px solid rgba(59,130,246,.3)}
+.step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.step-desc{font-size:12.5px;color:var(--text2);line-height:1.55}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border2);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:600}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.tbl-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;overflow-x:auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:24px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat-n{font-size:26px;font-weight:700;color:var(--text)}
+.stat-l{font-size:11px;color:var(--text3);margin-top:2px}
+.highlight{background:rgba(59,130,246,.08);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text2);margin:12px 0}
+.warn-box{background:rgba(245,158,11,.08);border-left:3px solid var(--warn);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text2);margin:12px 0}
+.success-box{background:rgba(16,185,129,.08);border-left:3px solid var(--success);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text2);margin:12px 0}
+.row-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.row-item:last-child{border-bottom:none}
+.row-path{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:200px;flex-shrink:0;line-height:1.5}
+.row-desc{font-size:12.5px;color:var(--text2);line-height:1.5}
+.qa-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.qa-item:last-child{border-bottom:none}
+.qa-q{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;gap:8px}
+.qa-q::before{content:"Q";background:var(--accent2);color:var(--accent);font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;margin-top:1px;font-family:var(--mono)}
+.qa-a{font-size:13px;color:var(--text2);line-height:1.65;padding-left:28px}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+@media(max-width:768px){.sidebar{transform:translateX(-270px)}.sidebar.open{transform:translateX(0)}.content{margin-left:0}section{padding:28px 16px}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="layout">
+<div class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-icon">
+          <img src="frontend/static/images/shell_logo.png" 
+                width="26" height="26" 
+                alt="Shell" 
+                style="object-fit:contain"/>
+      </div>
+      <div>
+        <div class="sb-title">LabAssist AI</div>
+        <div class="sb-sub">Shell LIMS Docs v2</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Overview</div>
+    <div class="sb-link active" onclick="nav('overview')"><span class="dot" style="background:#3b82f6"></span>What is LabAssist AI</div>
+    <div class="sb-link" onclick="nav('how-prompt-works')"><span class="dot" style="background:#8b5cf6"></span>How a prompt works end-to-end</div>
+    <div class="sb-link" onclick="nav('llama-picture')"><span class="dot" style="background:#f59e0b"></span>Where Llama comes in</div>
+
+    <div class="sb-section">AI Agents</div>
+    <div class="sb-link" onclick="nav('orchestrator')"><span class="dot" style="background:#8b5cf6"></span>Orchestrator agent</div>
+    <div class="sb-link" onclick="nav('document-agent')"><span class="dot" style="background:#10b981"></span>Document agent (RAG)</div>
+    <div class="sb-link" onclick="nav('database-agent')"><span class="dot" style="background:#f59e0b"></span>Database agent (NL→SQL)</div>
+    <div class="sb-link" onclick="nav('security-agent')"><span class="dot" style="background:#ef4444"></span>Security agent</div>
+    <div class="sb-link" onclick="nav('workflow-agent')"><span class="dot" style="background:#06b6d4"></span>Workflow agent</div>
+
+    <div class="sb-section">Vector Database</div>
+    <div class="sb-link" onclick="nav('vector-db-what')"><span class="dot" style="background:#10b981"></span>What is a vector DB</div>
+    <div class="sb-link" onclick="nav('vector-db-save')"><span class="dot" style="background:#10b981"></span>How data is saved</div>
+    <div class="sb-link" onclick="nav('vector-db-query')"><span class="dot" style="background:#10b981"></span>How data is retrieved</div>
+
+    <div class="sb-section">LIMS Database</div>
+    <div class="sb-link" onclick="nav('lims-tables')"><span class="dot" style="background:#f59e0b"></span>How tables are known</div>
+    <div class="sb-link" onclick="nav('nl-to-sql')"><span class="dot" style="background:#f59e0b"></span>NL to SQL — step by step</div>
+    <div class="sb-link" onclick="nav('sql-safety')"><span class="dot" style="background:#ef4444"></span>SQL safety validation</div>
+
+    <div class="sb-section">Testing</div>
+    <div class="sb-link" onclick="nav('how-to-test')"><span class="dot" style="background:#64748b"></span>How to test the system</div>
+    <div class="sb-link" onclick="nav('unit-tests')"><span class="dot" style="background:#64748b"></span>Unit tests</div>
+    <div class="sb-link" onclick="nav('test-questions')"><span class="dot" style="background:#64748b"></span>Test questions bank</div>
+
+    <div class="sb-section">Lead Q&A</div>
+    <div class="sb-link" onclick="nav('lead-qa')"><span class="dot" style="background:#ef4444"></span>Likely lead questions</div>
+    <div class="sb-link" onclick="nav('architecture-decisions')"><span class="dot" style="background:#3b82f6"></span>Architecture decisions</div>
+
+    <div class="sb-section">Reference</div>
+    <div class="sb-link" onclick="nav('folder-structure')"><span class="dot" style="background:#64748b"></span>Folder structure</div>
+    <div class="sb-link" onclick="nav('api-reference')"><span class="dot" style="background:#3b82f6"></span>API reference</div>
+    <div class="sb-link" onclick="nav('config-reference')"><span class="dot" style="background:#3b82f6"></span>Config reference</div>
+    <div class="sb-link" onclick="nav('workflows-built')"><span class="dot" style="background:#06b6d4"></span>Workflows built</div>
+    <div class="sb-link" onclick="nav('roadmap')"><span class="dot" style="background:#8b5cf6"></span>Roadmap</div>
+  </nav>
+  <div class="sb-footer">Shell Internal · LabAssist AI v1.0 · 27-May-2026</div>
+</div>
+
+<div class="content" id="content">
+<div class="topbar">
+  <button class="btn-icon" onclick="toggleSidebar()">☰</button>
+  <span class="topbar-title">LabAssist AI — Technical Documentation v2</span>
+  <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  <button class="btn-icon" onclick="window.print()">🖨️</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<section id="overview">
+  <div class="section-header">
+    <div class="section-tag">01 · What is LabAssist AI</div>
+    <h2>Shell LIMS Intelligence Platform</h2>
+    <p class="section-desc">An AI-powered chatbot built for Shell laboratory operations. It answers questions from uploaded SOP/training documents AND queries live SampleManager LIMS data — all using local Ollama LLMs. Zero data leaves the Shell network.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">AI Agents</div></div>
+    <div class="stat"><div class="stat-n">3</div><div class="stat-l">Ollama calls per message</div></div>
+    <div class="stat"><div class="stat-n">7</div><div class="stat-l">Security layers</div></div>
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">Guided workflows</div></div>
+    <div class="stat"><div class="stat-n">9</div><div class="stat-l">REST endpoints</div></div>
+    <div class="stat"><div class="stat-n">0</div><div class="stat-l">External API calls</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-title"><span class="badge b-blue">Knowledge</span>SOP Questions</div><div class="card-desc">"How do I create a sample?" → searches uploaded SOPs and training documents using semantic similarity, answers with cited source and page number.</div></div>
+    <div class="card"><div class="card-title"><span class="badge b-green">Database</span>Live LIMS Queries</div><div class="card-desc">"Show pending samples today" → converts question to safe Oracle SQL, runs against SampleManager LIMS, summarises results in plain English.</div></div>
+    <div class="card"><div class="card-title"><span class="badge b-warn">Hybrid</span>Combined Questions</div><div class="card-desc">"Explain approval process and show pending approvals" → runs BOTH document search AND database query, combines into one answer.</div></div>
+    <div class="card"><div class="card-title"><span class="badge b-purple">Workflow</span>Guided Multi-step</div><div class="card-desc">"Create samples for vessel unloading" → step-by-step guided form collecting vessel name, compartments, product type, priority, then confirms before creating.</div></div>
+  </div>
+</section>
+
+<!-- ═══ HOW A PROMPT WORKS ═══ -->
+<section id="how-prompt-works">
+  <div class="section-header">
+    <div class="section-tag">02 · Complete Prompt Journey</div>
+    <h2>What happens when you type a message</h2>
+    <p class="section-desc">Every single message travels through exactly these steps — from your keyboard to the response on screen.</p>
+  </div>
+  <div class="card">
+    <div class="flow-step"><div class="step-num">1</div><div>
+      <div class="step-title">You type a message and press Send</div>
+      <div class="step-desc">Browser calls <code style="font-family:var(--mono);font-size:12px;background:var(--bg4);padding:1px 5px;border-radius:3px">POST /api/v1/chat/</code> with JSON: <code style="font-family:var(--mono);font-size:12px;background:var(--bg4);padding:1px 5px;border-radius:3px">{message, session_id, model}</code>. Your JWT token is attached so the server knows who you are.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">2</div><div>
+      <div class="step-title">AuditLogMiddleware logs the request</div>
+      <div class="step-desc">Before your message even reaches any code, the middleware writes to <strong>audit.log</strong>: timestamp, your username, endpoint, IP address. This happens for every request — GxP compliance.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">3</div><div>
+      <div class="step-title">PromptInjectionMiddleware quick-scans</div>
+      <div class="step-desc">4 quick regex patterns checked: "ignore previous", "jailbreak", "system prompt", "forget instructions". If matched → logged to security.log. Does NOT block here — just logs early warning.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">4</div><div>
+      <div class="step-title">ChatView checks for active workflow</div>
+      <div class="step-desc">Looks in database: does this session have an active WorkflowSession? If YES → skip all agents, pass directly to WorkflowManager to continue the step-by-step form. If NO → continue to step 5.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">5</div><div>
+      <div class="step-title">WorkflowManager checks for trigger phrases</div>
+      <div class="step-desc">Scans message for workflow trigger phrases like "create samples for vessel unloading", "log test result", "request approval". If matched → start a new workflow. If not matched → continue to step 6.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">6</div><div>
+      <div class="step-title">SecurityAgent.check() — BLOCKS if unsafe</div>
+      <div class="step-desc">Deep security scan: length check (max 2000 chars), 15 injection patterns, 6 exfiltration patterns, RBAC role check. If ANY check fails → return rejection message. Message NEVER reaches Ollama. This is the hard wall.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">7</div><div>
+      <div class="step-title">🦙 OLLAMA CALL #1 — Intent Classification</div>
+      <div class="step-desc">The message + last 3 conversation turns are sent to Ollama with the INTENT_PROMPT. Ollama returns JSON like <code style="font-family:var(--mono);font-size:12px;background:var(--bg4);padding:1px 5px;border-radius:3px">{"intent":"database","confidence":0.92}</code>. Temperature=0 for consistency. Takes ~1-3 seconds.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">8</div><div>
+      <div class="step-title">Sub-agents run based on intent</div>
+      <div class="step-desc"><strong>knowledge/hybrid</strong> → DocumentAgent searches ChromaDB vector store, returns top-5 matching chunks with source citations.<br><strong>database/hybrid</strong> → DatabaseAgent generates SQL (Ollama call #2), validates safety, executes against Oracle RDS, gets rows back.<br><strong>general</strong> → neither runs.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">9</div><div>
+      <div class="step-title">🦙 OLLAMA CALL #2 — SQL Generation (if database query)</div>
+      <div class="step-desc">Only for database/hybrid intents. Sends the user question + full SampleManager schema to Ollama with NL_TO_SQL_PROMPT. Temperature=0 for deterministic SQL. Returns raw SQL string. Then SQLSafetyValidator checks it before execution.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">10</div><div>
+      <div class="step-title">🦙 OLLAMA CALL #3 — Final Synthesis</div>
+      <div class="step-desc">Orchestrator builds SYNTHESIS_PROMPT combining: user question + RAG chunks (if any) + DB results (if any) + last 6 conversation turns + user role. Sends to Ollama. Gets back the final human-readable answer. Temperature=0.1 for slight creativity. Takes 5-20 seconds depending on model.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">11</div><div>
+      <div class="step-title">Response saved to database and returned</div>
+      <div class="step-desc">Message saved to chat_message table with: content, intent_type, sources list, generated SQL (for audit trail), response_time_ms. JSON returned to browser. Browser renders response bubble with source citations if any.</div>
+    </div></div>
+  </div>
+  <div class="highlight">💡 <strong>Total Ollama calls per message:</strong> 1 (general) · 2 (knowledge) · 3 (database or hybrid). Each call is synchronous — they run in sequence, not parallel. This is why database+hybrid queries take longer.</div>
+</section>
+
+<!-- ═══ WHERE LLAMA COMES IN ═══ -->
+<section id="llama-picture">
+  <div class="section-header">
+    <div class="section-tag">03 · Where Llama / Ollama Comes In</div>
+    <h2>Llama is used 3 times per message</h2>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title"><span class="badge b-warn">Call 1</span>Intent Classification</div>
+      <div class="card-desc"><strong>Who calls it:</strong> OrchestratorAgent.classify_intent()</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Input to Llama:</strong> User message + last 3 turns + list of 4 intent categories</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Output from Llama:</strong> <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">{"intent":"database","confidence":0.92,"reasoning":"..."}</code></div>
+      <div class="card-desc" style="margin-top:6px"><strong>Temperature:</strong> 0.0 (must be consistent)</div>
+      <div class="card-desc" style="margin-top:6px"><strong>File:</strong> apps/agents/orchestrator.py → _call_ollama(INTENT_PROMPT)</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-green">Call 2</span>SQL Generation (DB queries only)</div>
+      <div class="card-desc"><strong>Who calls it:</strong> DatabaseAgent._generate_sql()</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Input to Llama:</strong> User question + full SampleManager schema (5 tables, all columns) + today's date + database engine type (Oracle)</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Output from Llama:</strong> Raw SQL string like <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">SELECT TOP 200 SAMPLE_ID FROM SAMPLES WHERE STATUS='PENDING'</code></div>
+      <div class="card-desc" style="margin-top:6px"><strong>Temperature:</strong> 0.0 (SQL must be deterministic)</div>
+      <div class="card-desc" style="margin-top:6px"><strong>File:</strong> apps/agents/database_agent.py → _call_ollama(NL_TO_SQL_PROMPT)</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-blue">Call 3</span>Final Answer Synthesis</div>
+      <div class="card-desc"><strong>Who calls it:</strong> OrchestratorAgent.process()</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Input to Llama:</strong> User question + RAG context (SOP chunks) + DB results summary + last 6 conversation turns + user role</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Output from Llama:</strong> The final answer text the user sees in the chat</div>
+      <div class="card-desc" style="margin-top:6px"><strong>Temperature:</strong> 0.1 (slight creativity for natural language)</div>
+      <div class="card-desc" style="margin-top:6px"><strong>File:</strong> apps/agents/orchestrator.py → _call_ollama(SYNTHESIS_PROMPT)</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-gray">How Llama is called</span>ollama Python library</div>
+      <div class="card-desc">We use the <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">ollama</code> Python library directly — NOT the LangChain wrapper (which had bugs). The call is:</div>
+      <div class="code">import ollama
+
+response = ollama.chat(
+    model="qwen2:0.5b",
+    messages=[{"role":"user","content": prompt}],
+    options={"temperature": 0.0}
+)
+answer = response["message"]["content"]</div>
+      <div class="card-desc" style="margin-top:8px">Ollama runs as a local service on port 11434. No internet needed. No API key. Data stays on your machine.</div>
+    </div>
+  </div>
+  <div class="warn-box">⚠️ <strong>Important:</strong> Llama/Ollama does NOT connect to your Oracle database directly. It only generates the SQL text. The actual database connection and execution is handled by the Python <code style="font-family:var(--mono);font-size:11px">oracledb</code> library with the SLUA read-only service account.</div>
+</section>
+
+<!-- ═══ ORCHESTRATOR ═══ -->
+<section id="orchestrator">
+  <div class="section-header">
+    <div class="section-tag">04 · Orchestrator Agent</div>
+    <h2>The brain — routes every message</h2>
+    <p class="section-desc">File: apps/agents/orchestrator.py. Central coordinator that classifies intent, calls sub-agents, and synthesises the final response.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">The INTENT_PROMPT — what Llama reads for classification</div>
+    <div class="code">You are an intent classifier for a Laboratory LIMS chatbot.
+Classify the user message into ONE category:
+
+- knowledge  : questions about SOPs, procedures, training, how-to guides
+- database   : requests for live LIMS data (pending samples, failed tests)
+- hybrid     : needs BOTH documentation AND live data
+- general    : greetings, thanks, help requests
+
+User Message: {user_message}
+Recent Context: {conversation_context}
+
+Reply in EXACTLY this JSON (no extra text):
+{"intent": "knowledge|database|hybrid|general",
+ "confidence": 0.0-1.0, "reasoning": "brief"}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">The SYNTHESIS_PROMPT — what Llama reads to write the final answer</div>
+    <div class="code">You are LabAssist AI, expert Laboratory LIMS assistant for Shell.
+
+USER ROLE: {user_role}
+
+CONVERSATION HISTORY:
+{conversation_history}    ← last 6 turns
+
+KNOWLEDGE BASE (from SOPs/Manuals):
+{rag_context}             ← chunks from ChromaDB (or "No docs found")
+
+LIVE DATABASE RESULTS:
+{db_context}              ← Oracle query results (or "No query run")
+
+USER QUESTION: {user_message}
+
+Instructions:
+- Reference SOP sections when applicable
+- Present DB results clearly with counts
+- Never fabricate data</div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">AgentContext — shared data object</div>
+      <div class="card-desc">One AgentContext is created per message. Passed between all agents. Contains everything about the request.</div>
+      <div class="code">user_id              # who sent it
+session_id           # which conversation
+user_role            # LAB_ANALYST etc.
+message              # what they typed
+conversation_history # last 8 messages
+intent               # classified intent
+rag_results          # from DocumentAgent
+db_results           # from DatabaseAgent
+generated_sql        # for audit trail
+final_response       # answer to show
+sources              # citations for UI</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Intent routing logic</div>
+      <div class="code">intent = KNOWLEDGE
+  → DocumentAgent.retrieve()
+  → Ollama Call #3
+
+intent = DATABASE
+  → DatabaseAgent.query()
+    → Ollama Call #2 (SQL)
+    → Execute Oracle
+  → Ollama Call #3
+
+intent = HYBRID
+  → DocumentAgent.retrieve()
+  → DatabaseAgent.query()
+  → Ollama Call #3
+
+intent = GENERAL
+  → No sub-agents
+  → Ollama Call #3 only</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DOCUMENT AGENT ═══ -->
+<section id="document-agent">
+  <div class="section-header">
+    <div class="section-tag">05 · Document Agent (RAG)</div>
+    <h2>Searches your uploaded SOPs and manuals</h2>
+    <p class="section-desc">File: apps/agents/document_agent.py. Handles all document ingestion and retrieval. Uses ChromaDB vector store.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">What RAG means</div>
+    <div class="card-desc"><strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration. Instead of relying on Llama's training data (which doesn't know your SOPs), we first <em>retrieve</em> relevant chunks from YOUR documents, then <em>augment</em> the prompt with those chunks, then <em>generate</em> an answer. Llama summarises YOUR content — it doesn't invent it.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Supported file formats</div>
+    <div class="tag-row">
+      <span class="badge b-red">PDF (.pdf)</span>
+      <span class="badge b-blue">Word (.docx)</span>
+      <span class="badge b-warn">PowerPoint (.pptx)</span>
+      <span class="badge b-green">Text (.txt)</span>
+      <span class="badge b-gray">Markdown (.md)</span>
+    </div>
+    <div class="card-desc" style="margin-top:10px">Max file size: 50MB. Text-based PDFs work best. Scanned PDFs (photos) may not extract text properly.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Ingestion pipeline — what happens when you upload</div>
+    <div class="flow-step"><div class="step-num">1</div><div><div class="step-title">Load the file</div><div class="step-desc">PyPDFLoader (PDF) / Docx2txtLoader (DOCX) / TextLoader (TXT) extracts raw text page by page.</div></div></div>
+    <div class="flow-step"><div class="step-num">2</div><div><div class="step-title">Split into chunks</div><div class="step-desc">RecursiveCharacterTextSplitter breaks text into chunks of 1000 characters with 200-character overlap. Overlap ensures context at boundaries is not lost. One 10-page SOP → ~50 chunks.</div></div></div>
+    <div class="flow-step"><div class="step-num">3</div><div><div class="step-title">Generate embeddings</div><div class="step-desc">sentence-transformers/all-MiniLM-L6-v2 converts each chunk into a 384-number vector. This is a mathematical representation of meaning. "Sample registration" and "how to register a sample" get similar vectors even though words differ.</div></div></div>
+    <div class="flow-step"><div class="step-num">4</div><div><div class="step-title">Store in ChromaDB</div><div class="step-desc">Each chunk + its vector + metadata (source file, page, doc type) stored in ChromaDB. Persisted to disk at data/chroma_db/. Survives server restarts.</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Retrieval — what happens when user asks a question</div>
+    <div class="flow-step"><div class="step-num">1</div><div><div class="step-title">Embed the question</div><div class="step-desc">Same MiniLM model converts the user's question to a 384-number vector.</div></div></div>
+    <div class="flow-step"><div class="step-num">2</div><div><div class="step-title">Cosine similarity search</div><div class="step-desc">ChromaDB finds the 5 stored chunks whose vectors are closest to the question vector. "Closest" = most similar in meaning. Takes milliseconds.</div></div></div>
+    <div class="flow-step"><div class="step-num">3</div><div><div class="step-title">Filter weak matches</div><div class="step-desc">Any chunk with similarity score below 0.3 is discarded. Prevents irrelevant content from polluting the answer.</div></div></div>
+    <div class="flow-step"><div class="step-num">4</div><div><div class="step-title">Format with citations</div><div class="step-desc">"[Source 1: SOP-001 Sample Registration, Page 4]\n...chunk text..." is injected into SYNTHESIS_PROMPT as {rag_context}.</div></div></div>
+  </div>
+</section>
+
+<!-- ═══ DATABASE AGENT ═══ -->
+<section id="database-agent">
+  <div class="section-header">
+    <div class="section-tag">06 · Database Agent (NL→SQL)</div>
+    <h2>Converts plain English to safe Oracle SQL</h2>
+    <p class="section-desc">File: apps/agents/database_agent.py. Queries the live SampleManager LIMS Oracle database using read-only access.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Oracle connection details</div>
+    <div class="code">Host:    dssm-lubsc-acc.ctmmbybjqmrj.eu-west-1.rds.amazonaws.com
+Port:    1521
+Service: LUBACC
+User:    SLUA
+Driver:  oracledb (Python thin mode)
+Access:  READ-ONLY (SELECT grants only)
+         SLUA cannot INSERT/UPDATE/DELETE</div>
+    <div class="card-desc" style="margin-top:8px">The Python <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">oracledb</code> thin mode means NO Oracle Client software needs to be installed. It connects directly over TCP to the AWS RDS instance.</div>
+  </div>
+</section>
+
+<!-- ═══ HOW TABLES ARE KNOWN ═══ -->
+<section id="lims-tables">
+  <div class="section-header">
+    <div class="section-tag">07 · How the System Knows Your Tables</div>
+    <h2>The hardcoded schema context</h2>
+    <p class="section-desc">This is a very common question. Llama does NOT connect to Oracle to discover tables. The table structure is hardcoded as a text string in database_agent.py and injected into every SQL generation prompt.</p>
+  </div>
+  <div class="highlight">📌 <strong>Key point:</strong> Llama learns your table structure from text we provide, not by querying Oracle directly. This is the SAMPLEMANAGER_SCHEMA variable in database_agent.py.</div>
+  <div class="card">
+    <div class="card-title">The hardcoded schema (SAMPLEMANAGER_SCHEMA)</div>
+    <div class="card-desc">This exact text is sent to Llama every time a DB query is needed:</div>
+    <div class="code">TABLE: SAMPLES
+  SAMPLE_ID     VARCHAR(50)   -- Primary key e.g. S-2024-001
+  SAMPLE_NAME   VARCHAR(200)  -- Description
+  STATUS        VARCHAR(50)   -- PENDING, IN_PROGRESS, COMPLETED, FAILED
+  SAMPLE_TYPE   VARCHAR(100)  -- Blood, Urine, Crude Oil etc.
+  RECEIVED_DATE DATETIME      -- When received
+  DUE_DATE      DATETIME      -- Analysis due
+  ANALYST_ID    VARCHAR(50)   -- Assigned analyst
+  PRIORITY      VARCHAR(20)   -- ROUTINE, URGENT, STAT
+
+TABLE: TEST_RESULTS
+  RESULT_ID     BIGINT        -- Primary key
+  SAMPLE_ID     VARCHAR(50)   -- FK to SAMPLES
+  TEST_CODE     VARCHAR(50)   -- Test identifier e.g. VISC-40
+  RESULT_VALUE  VARCHAR(500)  -- Result value
+  RESULT_STATUS VARCHAR(50)   -- PASS, FAIL, PENDING, RETEST_REQUIRED
+  ANALYST_ID    VARCHAR(50)
+  TESTED_DATE   DATETIME
+
+TABLE: APPROVALS
+  APPROVAL_ID   BIGINT
+  SAMPLE_ID     VARCHAR(50)
+  APPROVAL_STAGE VARCHAR(100) -- ANALYST_REVIEW, SUPERVISOR_APPROVAL, QA_SIGNOFF
+  STATUS        VARCHAR(50)   -- PENDING, APPROVED, REJECTED
+  REQUESTED_DATE DATETIME
+
+TABLE: ANALYSTS
+  ANALYST_ID    VARCHAR(50)
+  ANALYST_NAME  VARCHAR(200)
+  DEPARTMENT    VARCHAR(100)
+  IS_ACTIVE     BIT
+
+TABLE: AUDIT_TRAIL
+  AUDIT_ID      BIGINT
+  TABLE_NAME    VARCHAR(100)
+  ACTION        VARCHAR(50)   -- INSERT, UPDATE, DELETE
+  CHANGED_BY    VARCHAR(100)
+  CHANGE_DATE   DATETIME</div>
+  </div>
+  <div class="card">
+    <div class="card-title">How to add a new table to the system</div>
+    <div class="card-desc">Open <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">apps/agents/database_agent.py</code> and find the <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">SAMPLEMANAGER_SCHEMA</code> variable. Add your new table description in the same format. No code changes needed — just add the text. Llama will automatically know about it on the next query.</div>
+  </div>
+</section>
+
+<!-- ═══ NL TO SQL ═══ -->
+<section id="nl-to-sql">
+  <div class="section-header">
+    <div class="section-tag">08 · Natural Language to SQL</div>
+    <h2>Step-by-step SQL generation</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">Example: "Show pending samples for today"</div>
+    <div class="flow-step"><div class="step-num">1</div><div>
+      <div class="step-title">User types: "Show pending samples for today"</div>
+      <div class="step-desc">Intent classified as "database" by Ollama Call #1.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">2</div><div>
+      <div class="step-title">NL_TO_SQL_PROMPT built and sent to Ollama</div>
+      <div class="step-desc">Prompt includes: user question + full schema + today's date (27-05-2026) + engine=oracle + rules (SELECT only, use SYSDATE, FETCH FIRST 200 ROWS)</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">3</div><div>
+      <div class="step-title">Ollama returns SQL</div>
+      <div class="code">SELECT SAMPLE_ID, SAMPLE_NAME, STATUS,
+       ANALYST_ID, PRIORITY, RECEIVED_DATE
+FROM   SAMPLES
+WHERE  STATUS = 'PENDING'
+AND    TRUNC(RECEIVED_DATE) = TRUNC(SYSDATE)
+FETCH FIRST 200 ROWS ONLY</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">4</div><div>
+      <div class="step-title">SQLSafetyValidator checks it</div>
+      <div class="step-desc">12 forbidden patterns checked. Starts with SELECT ✓. No DROP/INSERT/UPDATE ✓. No comment injection ✓. Passes validation.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">5</div><div>
+      <div class="step-title">Execute against Oracle RDS</div>
+      <div class="step-desc">oracledb.connect() → cursor.execute(sql) → cursor.fetchall(). Returns list of row dicts.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">6</div><div>
+      <div class="step-title">Results sent to Ollama for summarisation</div>
+      <div class="step-desc">First 20 rows as JSON + row count sent to Ollama with RESULT_SUMMARY_PROMPT. Ollama writes human-friendly summary.</div>
+    </div></div>
+    <div class="flow-step"><div class="step-num">7</div><div>
+      <div class="step-title">Final synthesis includes the summary</div>
+      <div class="step-desc">The DB summary becomes {db_context} in SYNTHESIS_PROMPT. Ollama Call #3 writes the final answer incorporating it.</div>
+    </div></div>
+  </div>
+  <div class="highlight">🔍 <strong>Every generated SQL is saved</strong> in the Message.sql_query field in the database. You can see it in audit.log. This is the full audit trail required for GxP compliance.</div>
+</section>
+
+<!-- ═══ SQL SAFETY ═══ -->
+<section id="sql-safety">
+  <div class="section-header">
+    <div class="section-tag">09 · SQL Safety Validation</div>
+    <h2>12 forbidden patterns block all writes</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Pattern</th><th>Why blocked</th><th>Example blocked</th></tr>
+    <tr><td>\bINSERT\b</td><td>Cannot add records</td><td>INSERT INTO SAMPLES VALUES...</td></tr>
+    <tr><td>\bUPDATE\b</td><td>Cannot modify records</td><td>UPDATE SAMPLES SET STATUS=...</td></tr>
+    <tr><td>\bDELETE\b</td><td>Cannot delete records</td><td>DELETE FROM SAMPLES WHERE...</td></tr>
+    <tr><td>\bDROP\b</td><td>Cannot drop tables/DB</td><td>DROP TABLE SAMPLES</td></tr>
+    <tr><td>\bCREATE\b</td><td>Cannot create objects</td><td>CREATE TABLE test AS...</td></tr>
+    <tr><td>\bEXEC\b / \bEXECUTE\b</td><td>Cannot run stored procs directly</td><td>EXEC sp_executesql...</td></tr>
+    <tr><td>\bSP_\w+ / \bXP_\w+</td><td>Cannot call system procs</td><td>xp_cmdshell 'dir'</td></tr>
+    <tr><td>--</td><td>SQL comment injection</td><td>SELECT * -- DROP TABLE</td></tr>
+    <tr><td>/* </td><td>Block comment injection</td><td>SELECT /* hack */ *</td></tr>
+    <tr><td>; followed by word</td><td>Multiple statement injection</td><td>SELECT 1; DROP TABLE...</td></tr>
+    <tr><td>\bSYSOBJECTS\b</td><td>Schema exploration blocked</td><td>SELECT * FROM sysobjects</td></tr>
+    <tr><td>Must start with SELECT</td><td>Only reads allowed</td><td>Any non-SELECT query</td></tr>
+  </table></div>
+  <div class="success-box">✅ <strong>Even if all code checks failed</strong>, the Oracle SLUA user only has SELECT grants. The database itself enforces read-only access as a second layer of protection.</div>
+</section>
+
+<!-- ═══ SECURITY AGENT ═══ -->
+<section id="security-agent">
+  <div class="section-header">
+    <div class="section-tag">10 · Security Agent</div>
+    <h2>Runs before every agent — the hard wall</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Check</th><th>What it catches</th><th>Action</th></tr>
+    <tr><td>Length check</td><td>Messages over 2000 chars</td><td>Block + inform user</td></tr>
+    <tr><td>15 injection patterns</td><td>"ignore previous instructions", "jailbreak", "act as unrestricted AI", "print system prompt" etc.</td><td>Block + log to security.log</td></tr>
+    <tr><td>6 exfiltration patterns</td><td>"send data to http://...", "email results to", "dump all database"</td><td>Block + log to security.log</td></tr>
+    <tr><td>RBAC check</td><td>READ_ONLY user trying to query database</td><td>Block + inform user of required role</td></tr>
+    <tr><td>File upload check</td><td>Wrong extension, file too large, executable content type</td><td>Block with specific error message</td></tr>
+  </table></div>
+  <div class="card">
+    <div class="card-title">4 User Roles — what each can do</div>
+    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl">
+      <tr><th>Role</th><th>Chat (knowledge)</th><th>Chat (database)</th><th>Upload docs</th><th>Admin panel</th></tr>
+      <tr><td>READ_ONLY</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+      <tr><td>LAB_ANALYST</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+      <tr><td>LAB_SUPERVISOR</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>LIMS_ADMIN</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ═══ WORKFLOW AGENT ═══ -->
+<section id="workflow-agent">
+  <div class="section-header">
+    <div class="section-tag">11 · Workflow Agent</div>
+    <h2>Guided multi-step conversations</h2>
+    <p class="section-desc">Instead of one-shot Q&A, workflows guide the user through a multi-step form collecting all required information before taking action.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Example: "Create samples for vessel unloading"</div>
+    <div class="code">User:  "create samples for vessel unloading"
+Bot:   "Step 1 of 5: How many compartments?"
+User:  "6"
+Bot:   "Step 2 of 5: What is the vessel name?"
+User:  "MV Atlantic Star"
+Bot:   "Step 3 of 5: What is the arrival date? (DD-MM-YYYY)"
+User:  "27-05-2026"
+Bot:   "Step 4 of 5: What product is being unloaded?"
+       "1.Crude Oil 2.Fuel Oil 3.Lubricants 4.Other"
+User:  "2"
+Bot:   "Step 5 - Confirmation:"
+       "Vessel: MV Atlantic Star | Compartments: 6"
+       "Arrival: 27-05-2026 | Product: Fuel Oil"
+       "This will create 6 samples. Type YES to proceed."
+User:  "YES"
+Bot:   "✅ 6 samples created! IDs: S-2026-VES-..."</div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">How workflow state is stored</div>
+      <div class="card-desc">A <strong>WorkflowSession</strong> record in the SQLite database tracks the state. It stores: current step index, all collected answers so far, workflow ID, status (active/completed/cancelled). When each answer arrives, it's validated and stored, then the next question is returned.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">4 workflows built</div>
+      <div class="tag-row">
+        <span class="badge b-blue">Create Vessel Samples</span>
+        <span class="badge b-green">Log Test Result</span>
+        <span class="badge b-warn">Request Approval</span>
+        <span class="badge b-red">Retest Sample</span>
+      </div>
+      <div class="card-desc" style="margin-top:10px">Adding a new workflow = add one entry to workflow_definitions.py dictionary. No code changes. The WorkflowManager handles the rest automatically.</div>
+    </div>
+  </div>
+  <div class="warn-box">⚠️ <strong>Current status:</strong> Workflows collect data and show confirmation but do NOT yet write to Oracle. The INSERT code is commented out pending SLUA user write access grant and confirmation of stored procedure vs direct INSERT approach from the DBA team.</div>
+</section>
+
+<!-- ═══ VECTOR DB WHAT ═══ -->
+<section id="vector-db-what">
+  <div class="section-header">
+    <div class="section-tag">12 · What is a Vector Database</div>
+    <h2>ChromaDB — how meaning is stored as numbers</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">The analogy</div>
+    <div class="card-desc">A normal database stores text and searches by exact match: <code style="font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 4px;border-radius:3px">WHERE content LIKE '%sample%'</code>. A vector database stores meaning and searches by similarity. "How to register a specimen" and "sample registration procedure" are completely different strings — but in vector space they are mathematically close because they mean the same thing.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">How a 384-dimension vector works</div>
+    <div class="card-desc">The sentence-transformers model converts any text to an array of 384 numbers. Each number represents some aspect of meaning. Two sentences about the same topic get similar numbers in similar positions. ChromaDB indexes these vectors so it can find the closest ones in milliseconds using cosine similarity (dot product of normalised vectors).</div>
+    <div class="code">Text: "How to create a sample in SampleManager"
+Vector: [0.023, -0.147, 0.891, 0.034, -0.203, ...]
+         ↑ 384 numbers total
+
+Text: "Sample registration procedure"
+Vector: [0.019, -0.151, 0.887, 0.041, -0.198, ...]
+         ↑ Very similar numbers = similar meaning
+
+Cosine similarity = 0.94  → HIGH MATCH ✅
+
+Text: "Annual leave policy"
+Vector: [0.812, 0.334, -0.021, 0.671, 0.445, ...]
+         ↑ Very different numbers = different meaning
+
+Cosine similarity = 0.12  → LOW MATCH ❌ filtered out</div>
+  </div>
+</section>
+
+<!-- ═══ VECTOR DB SAVE ═══ -->
+<section id="vector-db-save">
+  <div class="section-header">
+    <div class="section-tag">13 · How Data is Saved in ChromaDB</div>
+    <h2>From PDF file to searchable vector</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">What gets stored per chunk</div>
+    <div class="code">For each chunk of text, ChromaDB stores:
+
+ID:        "550e8400-e29b-41d4-a716-446655440001"
+Document:  "Section 3.2 — Sample Registration\n
+            To register a new sample, navigate to..."
+            ↑ the actual text chunk (max 1000 chars)
+
+Embedding: [0.023, -0.147, 0.891, ...]
+            ↑ 384 numbers (the vector)
+
+Metadata:  {
+             "source_file": "SOP-001-Sample-Reg.pdf",
+             "title": "SOP-001 Sample Registration",
+             "document_type": "sop",
+             "page": 4,
+             "doc_id": "uuid-of-document",
+             "uploaded_by": "SM_01"
+           }</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Where ChromaDB files are on disk</div>
+    <div class="code">lab_assistant\
+  data\
+    chroma_db\           ← ChromaDB root folder
+      chroma.sqlite3     ← SQLite file storing all vectors + metadata
+      [uuid]\
+        data_level0.bin  ← HNSW index for fast similarity search
+        header.bin
+        length.bin
+        link_lists.bin</div>
+    <div class="card-desc" style="margin-top:8px">⚠️ <strong>Backup this folder regularly.</strong> If lost, all documents need to be re-ingested. The original uploaded files are in data/uploads/documents/ — they are NOT deleted.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Chunk settings (configurable in settings.py)</div>
+    <div class="code">RAG_CONFIG = {
+    "chunk_size": 1000,          # max chars per chunk
+    "chunk_overlap": 200,        # overlap between chunks
+    "top_k_results": 5,          # how many chunks to retrieve
+    "similarity_threshold": 0.3, # min score to include
+}</div>
+    <div class="card-desc" style="margin-top:8px">A 10-page SOP (≈5000 words, ≈30,000 chars) creates approximately 35-40 chunks. Each chunk has 200-char overlap with its neighbours to preserve context at boundaries.</div>
+  </div>
+</section>
+
+<!-- ═══ VECTOR DB QUERY ═══ -->
+<section id="vector-db-query">
+  <div class="section-header">
+    <div class="section-tag">14 · How Data is Retrieved from ChromaDB</div>
+    <h2>From user question to matching chunks</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">The retrieval code (simplified)</div>
+    <div class="code">def retrieve(user_question):
+    # Step 1: Convert question to vector
+    query_vector = embeddings.embed_query(user_question)
+    # query_vector = [0.019, -0.151, 0.887, ...]
+
+    # Step 2: Find top-5 closest chunks
+    results = chroma_db.similarity_search_with_score(
+        query=user_question,
+        k=5                    # return top 5
+    )
+    # returns: [(Document, score), (Document, score), ...]
+    # score = cosine similarity 0.0 to 1.0
+
+    # Step 3: Filter weak matches
+    filtered = [
+        (doc, score) for doc, score in results
+        if score >= 0.3        # discard weak matches
+    ]
+
+    # Step 4: Format for LLM
+    context = ""
+    for i, (doc, score) in enumerate(filtered):
+        context += f"[Source {i+1}: {doc.metadata['title']}, "
+        context += f"Page {doc.metadata['page']}]\n"
+        context += doc.page_content + "\n\n"
+
+    return context  # injected into SYNTHESIS_PROMPT</div>
+  </div>
+</section>
+
+<!-- ═══ HOW TO TEST ═══ -->
+<section id="how-to-test">
+  <div class="section-header">
+    <div class="section-tag">15 · How to Test the System</div>
+    <h2>Manual testing, automated tests, and diagnostic tools</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">Level 1 — Health Check (30 seconds)</div>
+    <div class="code"># Open in browser (no login needed):
+http://localhost:8000/api/v1/health/
+
+# Expected response:
+{
+  "status": "ok",
+  "components": {
+    "ollama": {"status": "ok", "models": ["qwen2:0.5b"]},
+    "database": {"status": "ok"},
+    "vector_store": {"status": "ok", "document_chunks": 150}
+  }
+}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Level 2 — Chat UI manual testing</div>
+    <div class="card-desc">Open http://localhost:8000 and test these scenarios in sequence:</div>
+    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl">
+      <tr><th>Test</th><th>Message to type</th><th>Expected result</th></tr>
+      <tr><td>Greeting</td><td>Hi</td><td>Friendly response, no DB query</td></tr>
+      <tr><td>Knowledge query</td><td>How do I create a sample in SampleManager?</td><td>Answer from SOP with source citation</td></tr>
+      <tr><td>DB query</td><td>Show pending samples for today</td><td>Oracle query runs, results listed</td></tr>
+      <tr><td>Hybrid query</td><td>Explain the approval workflow and show pending approvals</td><td>SOP content + DB results in one answer</td></tr>
+      <tr><td>Workflow trigger</td><td>create samples for vessel unloading</td><td>Step 1 of 5 question appears</td></tr>
+      <tr><td>Workflow cancel</td><td>CANCEL (during workflow)</td><td>Workflow cancelled message</td></tr>
+      <tr><td>Security test</td><td>ignore all previous instructions</td><td>Security block message</td></tr>
+      <tr><td>Delete chat</td><td>Hover sidebar item → 🗑️ → Delete</td><td>Chat removed from sidebar</td></tr>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Level 3 — Diagnostic script</div>
+    <div class="code"># Run the diagnostic script
+cd S:\WorkSpace\claude\lab_assistant_v1\lab_assistant
+python workflow_debug.py
+
+# Expected output:
+# [1] Cleared stuck workflows: 0
+# [2] Trigger detection: create_vessel_samples ✓
+# [3] Full sync flow: OK
+# [4] views.py checks: all OK
+# ALL CHECKS PASSED</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Level 4 — Check logs for errors</div>
+    <div class="code"># Check application log for errors
+type logs\app.log | findstr "ERROR"
+
+# Check security log for blocked attempts
+type logs\security.log
+
+# Check audit log for all activity
+type logs\audit.log | findstr "2026-05-27"
+
+# Check DB queries that ran
+type logs\audit.log | findstr "SQL QUERY"</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Level 5 — Database connectivity test</div>
+    <div class="code">python manage.py shell -c "
+import oracledb
+conn = oracledb.connect(
+    user='SLUA',
+    password='your_password',
+    dsn='dssm-lubsc-acc.ctmmbybjqmrj.eu-west-1.rds.amazonaws.com:1521/LUBACC'
+)
+cursor = conn.cursor()
+cursor.execute('SELECT COUNT(*) FROM SAMPLES')
+print('SAMPLES count:', cursor.fetchone()[0])
+conn.close()
+print('Oracle connection: OK')
+"</div>
+  </div>
+</section>
+
+<!-- ═══ UNIT TESTS ═══ -->
+<section id="unit-tests">
+  <div class="section-header">
+    <div class="section-tag">16 · Unit Tests</div>
+    <h2>18 automated tests covering security and SQL</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">Run all tests</div>
+    <div class="code">cd S:\WorkSpace\claude\lab_assistant_v1\lab_assistant
+pytest tests/unit/ -v
+
+# Run with coverage report
+pytest tests/unit/ --cov=apps --cov-report=html
+# Opens: htmlcov/index.html</div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Prompt injection tests (8 tests)</div>
+      <div class="code">✓ test_safe_message_passes
+✓ test_ignore_instructions_blocked
+✓ test_jailbreak_blocked
+✓ test_system_prompt_reveal_blocked
+✓ test_message_too_long_blocked
+✓ test_exfiltration_blocked
+✓ test_safe_sop_question
+✓ test_safe_db_question</div>
+    </div>
+    <div class="card">
+      <div class="card-title">SQL validator tests (10 tests)</div>
+      <div class="code">✓ test_valid_select
+✓ test_insert_blocked
+✓ test_update_blocked
+✓ test_delete_blocked
+✓ test_drop_blocked
+✓ test_exec_blocked
+✓ test_comment_injection_blocked
+✓ test_multiple_statements_blocked
+✓ test_add_limit_for_mssql
+✓ test_add_limit_for_postgresql</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TEST QUESTIONS BANK ═══ -->
+<section id="test-questions">
+  <div class="section-header">
+    <div class="section-tag">17 · Test Questions Bank</div>
+    <h2>Questions to demonstrate all capabilities</h2>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title"><span class="badge b-blue">Knowledge queries</span></div>
+      <div class="code">How do I create a new sample?
+What are the mandatory fields for sample registration?
+Explain the approval workflow
+What does the SOP say about retesting failed samples?
+How do I handle STAT priority samples?
+What is the escalation process for overdue samples?</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-green">Database queries</span></div>
+      <div class="code">Show pending samples for today
+How many samples await approval?
+Show failed test results from last 7 days
+List all STAT priority samples
+Show samples assigned to analyst SLUA
+How many samples were received this week?</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-warn">Hybrid queries</span></div>
+      <div class="code">Explain the approval process and show current pending approvals
+What does the SOP say about retesting and show failed samples?
+Explain STAT priority handling and show current STAT samples</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-purple">Workflow triggers</span></div>
+      <div class="code">create samples for vessel unloading
+log test result
+request approval
+retest sample
+vessel unloading
+schedule retest</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LEAD Q&A ═══ -->
+<section id="lead-qa">
+  <div class="section-header">
+    <div class="section-tag">18 · Likely Lead Questions & Answers</div>
+    <h2>Be prepared for these</h2>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">When the user types a message, how exactly does Llama get involved?</div>
+    <div class="qa-a">Llama is called up to 3 times. First for intent classification (what type of question is this?), second for SQL generation if it's a database query, third for writing the final answer by synthesising all gathered context. All calls go through the local Ollama service on port 11434 using the ollama Python library. Temperature is 0 for classification and SQL, 0.1 for the final answer.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How does the system know the Oracle table structure without connecting to discover it?</div>
+    <div class="qa-a">The five SampleManager LIMS tables (SAMPLES, TEST_RESULTS, APPROVALS, ANALYSTS, AUDIT_TRAIL) are hardcoded as a text description in the SAMPLEMANAGER_SCHEMA variable in database_agent.py. This text is injected into every SQL generation prompt so Llama knows the column names and data types. To add a new table, you simply add its description to that variable — no other code changes needed.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How is the vector database organised and can it be corrupted?</div>
+    <div class="qa-a">ChromaDB uses SQLite as its backend and stores vector index files in data/chroma_db/. Each document chunk is stored with its 384-dimension embedding vector and metadata. It's append-only during normal operation. Corruption risk is low but the folder should be backed up. If corrupted, delete the folder and re-ingest all documents using the management command.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What prevents someone from asking "DROP TABLE SAMPLES"?</div>
+    <div class="qa-a">Three independent layers: (1) SQLSafetyValidator in code — 12 regex patterns block any non-SELECT SQL before execution. (2) The query is only executed if it starts with SELECT. (3) The Oracle SLUA service account only has SELECT grants — even if the first two layers were bypassed, the database itself would reject any write operation.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What happens if someone tries to manipulate the AI with "ignore all previous instructions"?</div>
+    <div class="qa-a">SecurityAgent runs before Ollama is ever called. It scans for 15 prompt injection patterns including that phrase. If matched, the message is blocked, the rejection message returned, and the event logged to security.log with the user ID, timestamp, matched pattern, and message preview. Ollama never sees the message.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">The workflows collect data but don't write to Oracle yet — what's needed to make them write?</div>
+    <div class="qa-a">Three things from the DBA/IT team: (1) GRANT INSERT permission on the SAMPLES table to the SLUA user. (2) Confirmation of the correct sample ID format used by SampleManager (does it use a sequence, an autonumber, or a specific format?). (3) Confirmation whether SampleManager uses stored procedures for sample creation or direct INSERT is acceptable. Once these are confirmed, we uncomment 8 lines of code in workflow_executor.py.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How does conversation memory work across messages?</div>
+    <div class="qa-a">The last 8 messages of a ChatSession are loaded from the database and passed as conversation_history to the Orchestrator. The last 6 turns are included in the SYNTHESIS_PROMPT so Llama has context for follow-up questions. The last 3 turns are used for intent classification so "show me their details" after a previous question about samples correctly resolves "their" to samples.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Can this scale to multiple users simultaneously?</div>
+    <div class="qa-a">The current architecture supports multiple concurrent users via Django's request handling. The main bottleneck is Ollama — it processes one LLM call at a time by default. For higher concurrency, Ollama can be configured with multiple model instances, and the channel layer can be switched from InMemoryChannelLayer to Redis. The database can be migrated from SQLite to PostgreSQL. All three changes are environment/config changes — zero code changes needed.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How do we add new SOP documents to the knowledge base?</div>
+    <div class="qa-a">Two ways: (1) Via the UI — click the book icon, select document type, drag and drop the file. (2) Via command line — python manage.py ingest_documents --dir C:\sop_folder --type sop. Both methods load the file, split it into chunks, generate embeddings, and store in ChromaDB. The document appears immediately for queries after ingestion completes. A 10-page PDF takes about 30 seconds to ingest.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Why local Llama instead of OpenAI or Azure OpenAI?</div>
+    <div class="qa-a">Three reasons: (1) Shell's IT policy blocks external AI tools as seen when trying to access ollama.com from the corporate network — the same policy would block sending lab data to OpenAI. (2) Our LIMS data includes sample IDs, analyst names, test results, and product details — sending this to an external API creates data governance and IP protection issues. (3) Local Ollama has zero per-query cost, no internet dependency, and no service outage risk.</div>
+  </div>
+</section>
+
+<!-- ═══ ARCHITECTURE DECISIONS ═══ -->
+<section id="architecture-decisions">
+  <div class="section-header">
+    <div class="section-tag">19 · Architecture Decisions</div>
+    <h2>Why we built it this way</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Decision</th><th>What we chose</th><th>Why</th></tr>
+    <tr><td>Framework</td><td>Django (not Flask/FastAPI)</td><td>Built-in auth, ORM, admin, session management, migrations. Flask needs all built from scratch.</td></tr>
+    <tr><td>Architecture</td><td>Modular monolith</td><td>Start simple, scale later. No Docker/K8s overhead. Can extract agents to microservices when needed.</td></tr>
+    <tr><td>LLM</td><td>Local Ollama</td><td>Shell network blocks external AI. No data leaves the machine. Zero per-query cost.</td></tr>
+    <tr><td>Vector store</td><td>ChromaDB</td><td>Persistent, no separate server needed, good Python API, supports metadata filtering.</td></tr>
+    <tr><td>Embeddings</td><td>all-MiniLM-L6-v2</td><td>Small (90MB), fast on CPU, 384 dims is enough for lab document search.</td></tr>
+    <tr><td>DB driver</td><td>oracledb thin mode</td><td>No Oracle Client installation required. Direct TCP connection.</td></tr>
+    <tr><td>SQL generation</td><td>Hardcoded schema + LLM</td><td>Simpler and safer than dynamic schema discovery. Full control over what tables the LLM knows.</td></tr>
+    <tr><td>Lazy imports</td><td>AI imports inside functions</td><td>Django startup stays fast. manage.py migrate doesn't load 2GB of PyTorch.</td></tr>
+    <tr><td>Sync workflow</td><td>process_sync() not async</td><td>Django ORM cannot run inside async functions without sync_to_async wrappers. Sync is simpler and reliable.</td></tr>
+  </table></div>
+</section>
+
+<!-- ═══ FOLDER STRUCTURE ═══ -->
+<section id="folder-structure">
+  <div class="section-header">
+    <div class="section-tag">20 · Complete Folder Structure</div>
+    <h2>Every file explained</h2>
+  </div>
+  <div class="code">lab_assistant\
+├── config\
+│   ├── settings.py       ← ALL config: Ollama URL, Oracle DB, JWT, RBAC, logging
+│   ├── urls.py           ← root URL routing (admin + JWT auth + api/v1/ + /)
+│   ├── wsgi.py           ← for: python manage.py runserver
+│   └── asgi.py           ← for: daphne (HTTP + WebSocket)
+│
+├── apps\
+│   ├── chat\
+│   │   ├── models.py     ← ChatSession, Message, Feedback, Memory, WorkflowSession
+│   │   ├── consumers.py  ← WebSocket streaming consumer
+│   │   ├── routing.py    ← ws/chat/&lt;uuid&gt;/ WebSocket URL
+│   │   ├── urls.py       ← / /login/ /logout/
+│   │   └── frontend_views.py  ← serves index.html, login/logout logic
+│   │
+│   ├── agents\
+│   │   ├── orchestrator.py         ← intent classification + response synthesis
+│   │   ├── document_agent.py       ← ChromaDB ingest + semantic search
+│   │   ├── database_agent.py       ← NL→SQL + Oracle execution + SAMPLEMANAGER_SCHEMA
+│   │   ├── security_agent.py       ← injection detection + RBAC + file validation
+│   │   ├── workflow_manager.py     ← multi-step conversation state machine
+│   │   ├── workflow_definitions.py ← all 4 workflows defined as config dicts
+│   │   └── workflow_executor.py    ← executes confirmed workflows
+│   │
+│   ├── api\
+│   │   ├── views.py      ← all 9+ REST endpoint view classes
+│   │   └── urls.py       ← /api/v1/* URL patterns
+│   │
+│   ├── documents\
+│   │   ├── models.py     ← Document model (tracks ingested files)
+│   │   └── management\commands\ingest_documents.py  ← CLI bulk ingest
+│   │
+│   └── security\
+│       └── middleware.py ← AuditLogMiddleware + PromptInjectionMiddleware
+│
+├── frontend\
+│   └── templates\
+│       ├── index.html    ← full chat SPA (Shell logo, dark/light, delete chats)
+│       └── login.html    ← Shell-branded login page
+│
+├── data\
+│   ├── uploads\documents\  ← uploaded PDF/DOCX files stored here
+│   ├── chroma_db\          ← ChromaDB vector store (BACK THIS UP)
+│   └── faiss_index\        ← FAISS alternative (not used currently)
+│
+├── logs\
+│   ├── app.log          ← general events, errors (rotate 10MB × 5)
+│   ├── audit.log        ← every API call + every SQL query (GxP compliance)
+│   └── security.log     ← injection attempts, RBAC violations
+│
+├── tests\unit\
+│   └── test_security.py ← 18 unit tests for security + SQL validation
+│
+├── scripts\
+│   └── setup.py         ← one-time setup wizard
+│
+├── workflow_debug.py    ← diagnostic tool (run if workflow issues)
+├── manage.py
+├── .env                 ← SECRETS — never commit to git
+├── requirements.txt
+└── lab_assistant.sqlite3  ← app database (auto-created by migrate)</div>
+</section>
+
+<!-- ═══ API REFERENCE ═══ -->
+<section id="api-reference">
+  <div class="section-header">
+    <div class="section-tag">21 · API Reference</div>
+    <h2>All REST endpoints</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
+    <tr><td>POST</td><td>/api/v1/chat/</td><td>JWT</td><td>Send message. Returns response, intent, sources, session_id.</td></tr>
+    <tr><td>GET</td><td>/api/v1/sessions/</td><td>JWT</td><td>List active sessions for current user.</td></tr>
+    <tr><td>POST</td><td>/api/v1/sessions/</td><td>JWT</td><td>Create new session.</td></tr>
+    <tr><td>DELETE</td><td>/api/v1/sessions/&lt;id&gt;/delete/</td><td>JWT</td><td>Delete a single session and all its messages.</td></tr>
+    <tr><td>DELETE</td><td>/api/v1/sessions/delete-all/</td><td>JWT</td><td>Delete all sessions for current user.</td></tr>
+    <tr><td>GET</td><td>/api/v1/history/&lt;id&gt;/</td><td>JWT</td><td>Get all messages for a session.</td></tr>
+    <tr><td>POST</td><td>/api/v1/documents/upload/</td><td>JWT + Supervisor</td><td>Upload PDF/DOCX to knowledge base.</td></tr>
+    <tr><td>GET</td><td>/api/v1/documents/</td><td>JWT</td><td>List ingested documents.</td></tr>
+    <tr><td>GET</td><td>/api/v1/sources/</td><td>JWT</td><td>Vector store statistics.</td></tr>
+    <tr><td>POST</td><td>/api/v1/feedback/</td><td>JWT</td><td>Submit thumbs up/down rating.</td></tr>
+    <tr><td>GET</td><td>/api/v1/health/</td><td>None</td><td>System health check (Ollama + DB + vector store).</td></tr>
+  </table></div>
+</section>
+
+<!-- ═══ CONFIG REFERENCE ═══ -->
+<section id="config-reference">
+  <div class="section-header">
+    <div class="section-tag">22 · .env Configuration Reference</div>
+    <h2>All settings explained</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Variable</th><th>Current value</th><th>Description</th></tr>
+    <tr><td>DJANGO_SECRET_KEY</td><td>50+ random chars</td><td>Django security key. Change in production.</td></tr>
+    <tr><td>DEBUG</td><td>True</td><td>Set False in production. Hides error details from users.</td></tr>
+    <tr><td>OLLAMA_BASE_URL</td><td>http://localhost:11434</td><td>Where Ollama service is running.</td></tr>
+    <tr><td>OLLAMA_MODEL</td><td>qwen2:0.5b</td><td>Active model. Change to llama3 when more RAM available.</td></tr>
+    <tr><td>VECTOR_STORE_TYPE</td><td>chroma</td><td>chroma (recommended) or faiss.</td></tr>
+    <tr><td>EMBEDDING_MODEL</td><td>all-MiniLM-L6-v2</td><td>HuggingFace embedding model. Downloads once, cached locally.</td></tr>
+    <tr><td>LIMS_DB_ENGINE</td><td>oracle</td><td>oracle | mssql | postgresql</td></tr>
+    <tr><td>LIMS_DB_HOST</td><td>dssm-lubsc-acc.ctmmbybjqmrj...</td><td>Oracle RDS hostname on AWS eu-west-1.</td></tr>
+    <tr><td>LIMS_DB_PORT</td><td>1521</td><td>Oracle standard port.</td></tr>
+    <tr><td>LIMS_DB_NAME</td><td>LUBACC</td><td>Oracle service name.</td></tr>
+    <tr><td>LIMS_DB_USER</td><td>SLUA</td><td>Read-only service account. SELECT grants only.</td></tr>
+    <tr><td>LIMS_DB_PASSWORD</td><td>(secret)</td><td>Never commit to git.</td></tr>
+  </table></div>
+</section>
+
+<!-- ═══ WORKFLOWS ═══ -->
+<section id="workflows-built">
+  <div class="section-header">
+    <div class="section-tag">23 · Workflows Built</div>
+    <h2>4 guided multi-step workflows</h2>
+  </div>
+  <div class="tbl-wrap"><table class="tbl">
+    <tr><th>Workflow</th><th>Trigger phrase</th><th>Steps</th><th>Oracle write</th></tr>
+    <tr><td>Create Vessel Samples</td><td>"create samples for vessel unloading"</td><td>5 (compartments, vessel, date, product, confirm)</td><td>Pending DBA access</td></tr>
+    <tr><td>Log Test Result</td><td>"log test result"</td><td>5 (sample, test code, value, status, confirm)</td><td>Pending DBA access</td></tr>
+    <tr><td>Request Approval</td><td>"request approval"</td><td>4 (sample, stage, comments, confirm)</td><td>Pending DBA access</td></tr>
+    <tr><td>Retest Sample</td><td>"retest sample"</td><td>4 (sample, reason, priority, confirm)</td><td>Pending DBA access</td></tr>
+  </table></div>
+  <div class="card">
+    <div class="card-title">How to add a new workflow — only one file to edit</div>
+    <div class="code"># In apps/agents/workflow_definitions.py
+# Add a new entry to WORKFLOWS dict:
+
+WORKFLOWS = {
+    ...existing workflows...
+
+    "your_new_workflow": {
+        "name": "Your Workflow Name",
+        "description": "What it does",
+        "triggers": ["phrase to trigger it", "another phrase"],
+        "requires_role": "LAB_ANALYST",
+        "steps": [
+            {
+                "id": "step1_field",
+                "ask": "Question to ask the user?",
+                "field": "step1_field",
+                "validate": "text",         # text|number:1:100|date|yesno|choice:A,B,C
+                "help_text": "Hint if user types 'help'",
+            },
+            {
+                "id": "confirm",
+                "ask": "Confirm: {step1_field}? Type YES or NO:",
+                "field": "confirmed",
+                "validate": "yesno",
+            },
+        ],
+        "execute_fn": "execute_your_new_workflow",  # add this fn to workflow_executor.py
+    },
+}</div>
+  </div>
+</section>
+
+<!-- ═══ ROADMAP ═══ -->
+<section id="roadmap">
+  <div class="section-header">
+    <div class="section-tag">24 · Roadmap — What comes next</div>
+    <h2>Future development phases</h2>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title"><span class="badge b-red">Immediate (this sprint)</span></div>
+      <div class="code">□ Get Oracle write access for SLUA user
+□ Confirm sample ID format from DBA
+□ Uncomment Oracle INSERT in workflow_executor.py
+□ Test create_vessel_samples writes real data
+□ Upload Shell SOPs and training manuals
+□ Test RAG with real Shell lab documents</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-warn">Short term (1-2 months)</span></div>
+      <div class="code">□ Upgrade to llama3 on proper lab server (16GB+ RAM)
+□ Add more SampleManager tables to schema
+□ Build "Show my samples" personalised query
+□ Add sample barcode/QR scanner integration
+□ Email notifications on workflow completion
+□ Add analyst workload dashboard query</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-blue">Medium term (3-6 months)</span></div>
+      <div class="code">□ Switch SQLite to PostgreSQL
+□ Add Redis for WebSocket scaling
+□ Deploy on lab server with nginx
+□ Add Active Directory / LDAP authentication
+□ Integration tests with real LIMS data
+□ Performance tuning for concurrent users</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-purple">Long term (6+ months)</span></div>
+      <div class="code">□ Mobile app (React Native)
+□ Voice input for hands-free lab use
+□ Predictive analytics (sample failure prediction)
+□ Integration with other Shell LIMS instances
+□ Fine-tune Llama on Shell lab domain data
+□ Multi-language support</div>
+    </div>
+  </div>
+  <div class="success-box">✅ <strong>Current state:</strong> Working prototype on local Windows laptop. Full chat UI, RAG knowledge base, Oracle DB queries, guided workflows, 7-layer security, delete chats, Shell branding. Ready for internal demo to lead team.</div>
+</section>
+
+</div><!-- end content -->
+</div><!-- end layout -->
+
+<script>
+function nav(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('content').classList.toggle('full');
+}
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themeBtn').textContent=dark?'🌙':'☀️';
+}
+const sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  document.querySelectorAll('.sb-link').forEach((l,i)=>{
+    const ids=['overview','how-prompt-works','llama-picture','orchestrator','document-agent',
+      'database-agent','security-agent','workflow-agent','vector-db-what','vector-db-save',
+      'vector-db-query','lims-tables','nl-to-sql','sql-safety','how-to-test','unit-tests',
+      'test-questions','lead-qa','architecture-decisions','folder-structure','api-reference',
+      'config-reference','workflows-built','roadmap'];
+    l.classList.toggle('active',ids[i]===cur);
+  });
+});
+document.querySelectorAll('.code').forEach(b=>{
+  b.title='Click to copy';b.style.cursor='pointer';
+  b.addEventListener('click',()=>{
+    navigator.clipboard.writeText(b.textContent).then(()=>{
+      const o=b.style.borderColor;
+      b.style.borderColor='#10b981';
+      setTimeout(()=>b.style.borderColor=o,800);
+    });
+  });
+});
+</script>
+</body>
+</html>
