@@ -356,7 +356,6 @@
       overflow: hidden;
       padding: 6px;
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
       50%       { transform: translateY(-6px); }
@@ -758,11 +757,27 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo-row">
-        <div class="logo-icon"><img src="/static/images/shell_logo.png" 
-     width="32" height="32" alt="Shell"/></div>
+        <div class="logo-icon" style="background:none;box-shadow:none;padding:2px">
+          <!-- Shell Pecten Logo -->
+          <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="50" rx="48" ry="48" fill="#DD1D21"/>
+            <path d="M50 10 C50 10, 30 25, 22 45 C18 55, 20 65, 28 72
+                     C24 68, 24 60, 28 55 C32 50, 38 50, 42 52
+                     C38 48, 38 40, 42 35 C44 32, 47 30, 50 30
+                     C53 30, 56 32, 58 35 C62 40, 62 48, 58 52
+                     C62 50, 68 50, 72 55 C76 60, 76 68, 72 72
+                     C80 65, 82 55, 78 45 C70 25, 50 10, 50 10Z"
+                  fill="#FFC000"/>
+            <path d="M50 30 C47 30, 44 32, 42 35 C38 40, 38 48, 42 52
+                     C44 54, 47 55, 50 55 C53 55, 56 54, 58 52
+                     C62 48, 62 40, 58 35 C56 32, 53 30, 50 30Z"
+                  fill="#FFC000"/>
+            <rect x="28" y="72" width="44" height="8" rx="2" fill="#FFC000"/>
+          </svg>
+        </div>
         <div>
           <div class="logo-text">LabAssist AI</div>
-          <div class="logo-sub">LIMS Intelligence</div>
+          <div class="logo-sub">Shell LIMS Intelligence</div>
         </div>
       </div>
       <button class="btn-new-chat" onclick="startNewChat()">
@@ -800,14 +815,11 @@
         <i class="bi bi-layout-sidebar"></i>
       </button>
 
-      <div class="model-selector">
+      <div class="model-selector" style="cursor:default" title="Model configured in .env">
         <i class="bi bi-cpu" style="font-size:13px;color:var(--accent)"></i>
-        <select id="modelSelect" onchange="onModelChange(this.value)">
-          <option value="llama3">Llama 3 · 8B</option>
-          <option value="mistral">Mistral · 7B</option>
-          <option value="qwen">Qwen 2 · 7B</option>
-          <option value="deepseek">DeepSeek-R1 · 8B</option>
-        </select>
+        <span id="modelLabel" style="font-family:var(--font-mono);font-size:12.5px;color:var(--text-primary)">
+          Loading…
+        </span>
       </div>
 
       <div class="topbar-spacer"></div>
@@ -832,11 +844,27 @@
 
         <!-- Welcome Screen -->
         <div class="welcome-screen" id="welcomeScreen">
-          <div class="welcome-logo"><img src="/static/images/shell_logo.png" 
-     width="64" height="64" alt="Shell"/></div>
+          <div class="welcome-logo" style="background:none;box-shadow:none">
+            <svg viewBox="0 0 100 100" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="50" cy="50" rx="48" ry="48" fill="#DD1D21"/>
+              <path d="M50 10 C50 10, 30 25, 22 45 C18 55, 20 65, 28 72
+                       C24 68, 24 60, 28 55 C32 50, 38 50, 42 52
+                       C38 48, 38 40, 42 35 C44 32, 47 30, 50 30
+                       C53 30, 56 32, 58 35 C62 40, 62 48, 58 52
+                       C62 50, 68 50, 72 55 C76 60, 76 68, 72 72
+                       C80 65, 82 55, 78 45 C70 25, 50 10, 50 10Z"
+                    fill="#FFC000"/>
+              <path d="M50 30 C47 30, 44 32, 42 35 C38 40, 38 48, 42 52
+                       C44 54, 47 55, 50 55 C53 55, 56 54, 58 52
+                       C62 48, 62 40, 58 35 C56 32, 53 30, 50 30Z"
+                    fill="#FFC000"/>
+              <rect x="28" y="72" width="44" height="8" rx="2" fill="#FFC000"/>
+            </svg>
+          </div>
           <div>
             <div class="welcome-title">LabAssist AI</div>
-            <div class="welcome-subtitle" style="margin-top:8px">
+            <div style="font-size:12px;color:var(--text-muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-top:2px">Shell LIMS Intelligence Platform</div>
+            <div class="welcome-subtitle" style="margin-top:10px">
               Your intelligent assistant for SampleManager LIMS.<br>
               Ask about SOPs, sample status, test results, and more.
             </div>
@@ -1024,13 +1052,24 @@ async function checkHealth() {
     if (data.status === 'ok') {
       dot.classList.remove('offline');
       lbl.textContent = 'Online';
+      // Show active model name from Ollama
+      const models = data.components?.ollama?.models || [];
+      if (models.length > 0) {
+        const m = models[0];
+        // Format nicely: "llama3:latest" -> "Llama 3"  |  "qwen2:0.5b" -> "Qwen2 0.5B"
+        const pretty = m.replace(':latest','').replace(':',' ').replace(/\b\w/g, c=>c.toUpperCase());
+        document.getElementById('modelLabel').textContent = pretty;
+        STATE.model = m.split(':')[0];
+      }
     } else {
       dot.classList.add('offline');
       lbl.textContent = 'Degraded';
+      document.getElementById('modelLabel').textContent = 'Degraded';
     }
   } catch {
     document.getElementById('statusDot').classList.add('offline');
     document.getElementById('statusLabel').textContent = 'Offline';
+    document.getElementById('modelLabel').textContent = 'Offline';
   }
   setTimeout(checkHealth, 30000);
 }
