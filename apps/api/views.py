@@ -505,6 +505,57 @@ class FeedbackView(APIView):
         return Response({"status": "feedback_recorded", "created": created})
 
 
+class MeView(APIView):
+    """GET /api/v1/me/ — return current user info including role."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        role = get_user_role(request.user)
+        return Response({
+            "username": request.user.username,
+            "email":    request.user.email,
+            "role":     role,
+            "is_admin": role == "LIMS_ADMIN",
+        })
+
+
+class DeleteDocumentView(APIView):
+    """DELETE /api/v1/documents/<id>/delete/ — LIMS_ADMIN only."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, doc_id):
+        # Only LIMS_ADMIN can delete documents
+        role = get_user_role(request.user)
+        if role != "LIMS_ADMIN":
+            return Response(
+                {"error": "Only LIMS_ADMIN can delete documents."},
+                status=403
+            )
+        try:
+            doc = LabDocument.objects.get(id=doc_id)
+            doc_title = doc.title
+
+            # Remove from vector store
+            try:
+                doc_agent = get_doc_agent()
+                doc_agent.delete_document(str(doc_id))
+            except Exception as e:
+                logger.warning(f"Vector store delete failed for {doc_id}: {e}")
+
+            # Mark as archived in DB (keep file on disk)
+            doc.status = "archived"
+            doc.save(update_fields=["status"])
+
+            audit_logger.info(
+                f"DOCUMENT_DELETE | user={request.user.username} | "
+                f"doc={doc_title} | id={doc_id}"
+            )
+            return Response({"status": "deleted", "title": doc_title})
+
+        except LabDocument.DoesNotExist:
+            return Response({"error": "Document not found"}, status=404)
+
+
 class DeleteSessionView(APIView):
     """DELETE /api/v1/sessions/<session_id>/delete/ — delete a single session."""
     permission_classes = [IsAuthenticated]

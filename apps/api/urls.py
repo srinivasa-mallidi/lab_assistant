@@ -11,9 +11,13 @@ urlpatterns = [
     path("sessions/<uuid:session_id>/delete/", views.DeleteSessionView.as_view(), name="session-delete"),
     path("history/<uuid:session_id>/", views.HistoryView.as_view(),    name="history"),
 
+    # Current user info
+    path("me/",                  views.MeView.as_view(),                name="me"),
+
     # Documents / Knowledge Base
     path("documents/",           views.DocumentListView.as_view(),      name="document-list"),
     path("documents/upload/",    views.DocumentUploadView.as_view(),    name="document-upload"),
+    path("documents/<uuid:doc_id>/delete/", views.DeleteDocumentView.as_view(), name="document-delete"),
     path("sources/",             views.SourcesView.as_view(),           name="sources"),
 
     # Feedback
