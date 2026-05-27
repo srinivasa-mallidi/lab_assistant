@@ -505,6 +505,40 @@ class FeedbackView(APIView):
         return Response({"status": "feedback_recorded", "created": created})
 
 
+class DeleteSessionView(APIView):
+    """DELETE /api/v1/sessions/<session_id>/delete/ — delete a single session."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, session_id):
+        try:
+            session = ChatSession.objects.get(
+                id=session_id, user=request.user
+            )
+            session_title = session.title
+            session.delete()   # cascades to messages, workflows, feedback
+            audit_logger.info(
+                f"SESSION_DELETE | user={request.user.username} | "
+                f"session={session_id} | title={session_title[:50]}"
+            )
+            return Response({"status": "deleted", "session_id": str(session_id)})
+        except ChatSession.DoesNotExist:
+            return Response({"error": "Session not found"}, status=404)
+
+
+class DeleteAllSessionsView(APIView):
+    """DELETE /api/v1/sessions/delete-all/ — delete all sessions for user."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        sessions = ChatSession.objects.filter(user=request.user)
+        count = sessions.count()
+        sessions.delete()
+        audit_logger.info(
+            f"SESSION_DELETE_ALL | user={request.user.username} | count={count}"
+        )
+        return Response({"status": "deleted", "deleted": count})
+
+
 class HealthView(APIView):
     """GET /api/v1/health - System health check."""
     permission_classes = []  # Public endpoint

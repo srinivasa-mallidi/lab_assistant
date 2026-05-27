@@ -76,3 +76,10 @@
 2026-05-27 11:00:22,678 AUDIT INFO API | user=SM_01 | method=POST | path=/api/v1/chat/ | status=200 | ip=127.0.0.1 | ms=63
 2026-05-27 11:00:27,437 AUDIT INFO WORKFLOW_EXECUTE | create_vessel_samples | vessel=testing | count=5 | priority=URGENT | samples=['S-2026-VES-20260527-001', 'S-2026-VES-20260527-002', 'S-2026-VES-20260527-003', 'S-2026-VES-20260527-004', 'S-2026-VES-20260527-005']
 2026-05-27 11:00:27,465 AUDIT INFO API | user=SM_01 | method=POST | path=/api/v1/chat/ | status=200 | ip=127.0.0.1 | ms=186
+2026-05-27 12:47:49,694 AUDIT INFO API | user=SM_01 | method=GET | path=/api/v1/documents/ | status=200 | ip=127.0.0.1 | ms=7
+2026-05-27 12:47:57,713 AUDIT INFO SESSION_DELETE | user=SM_01 | session=35396e51-58f1-4eac-bde9-9b5cf84a88ec | title=create a sample for vessel unloading
+2026-05-27 12:48:02,193 AUDIT INFO SESSION_DELETE_ALL | user=SM_01 | count=18
+2026-05-27 12:48:05,684 AUDIT INFO API | user=SM_01 | method=GET | path=/api/v1/documents/ | status=200 | ip=127.0.0.1 | ms=12
+2026-05-27 13:51:50,275 AUDIT INFO API | user=SM_01 | method=GET | path=/api/v1/documents/ | status=200 | ip=127.0.0.1 | ms=9
+2026-05-27 13:55:42,767 AUDIT INFO API | user=SM_01 | method=GET | path=/api/v1/documents/ | status=200 | ip=127.0.0.1 | ms=9
+2026-05-27 13:55:45,162 AUDIT INFO API | user=SM_01 | method=GET | path=/api/v1/documents/ | status=200 | ip=127.0.0.1 | ms=11
