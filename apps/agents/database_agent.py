@@ -41,117 +41,151 @@ class DBResult:
     columns: list = field(default_factory=list)
 
 
-# ─── SampleManager Schema Context ─────────────────────────────────────────────
+# ─── Real SampleManager LIMS Schema ──────────────────────────────────────────
+# Based on actual Oracle RDS schema (LUBACC / SLUA user)
 SAMPLEMANAGER_SCHEMA = """
-SampleManager LIMS Database Schema (READ-ONLY access):
+SampleManager LIMS Database — Real Oracle Schema (READ-ONLY):
 
-TABLE: SAMPLES
-  SAMPLE_ID        VARCHAR(50)   -- Primary key, e.g. S-2024-001
-  SAMPLE_NAME      VARCHAR(200)  -- Sample description
-  STATUS           VARCHAR(50)   -- PENDING, IN_PROGRESS, COMPLETED, FAILED, CANCELLED
-  SAMPLE_TYPE      VARCHAR(100)  -- Type of sample (Blood, Urine, etc.)
-  RECEIVED_DATE    DATETIME      -- When sample was received
-  DUE_DATE         DATETIME      -- Analysis due date
-  ANALYST_ID       VARCHAR(50)   -- Assigned analyst
-  CONTAINER_ID     VARCHAR(50)   -- Container reference
-  PRIORITY         VARCHAR(20)   -- ROUTINE, URGENT, STAT
-  CREATED_BY       VARCHAR(100)
-  CREATED_DATE     DATETIME
+TABLE: SAMPLE_TABLE   (main samples table)
+  ID_NUMERIC       NUMBER        -- numeric sample ID (internal key)
+  ID_TEXT          VARCHAR2      -- text sample ID shown to users e.g. "LAB-2026-001"
+  JOB_NAME         VARCHAR2      -- job/batch name
+  STATUS           VARCHAR2      -- current status e.g. 'U' (unreported), 'A' (authorised), 'X' (cancelled)
+  OLD_STATUS       VARCHAR2      -- previous status
+  SAMPLED_DATE     DATE          -- when sample was taken
+  RECD_DATE        DATE          -- when sample was received in lab
+  DATE_STARTED     DATE          -- when analysis started
+  DATE_COMPLETED   DATE          -- when analysis completed
+  DATE_AUTHORISED  DATE          -- when sample was authorised/approved
+  COMPLETER        VARCHAR2      -- who completed the analysis
+  AUTHORISER       VARCHAR2      -- who authorised
+  AUTHORISATION_NOTES VARCHAR2   -- authorisation comments
+  PRODUCT          VARCHAR2      -- product name e.g. "Crude Oil", "Fuel Oil"
+  PRODUCT_VERSION  VARCHAR2      -- product version
+  GRADE_CODE       VARCHAR2      -- grade/spec code
+  SAMPLE_NAME      VARCHAR2      -- sample description
+  DESCRIPTION      VARCHAR2      -- additional description
+  SAMPLE_TYPE      VARCHAR2      -- type of sample
+  BATCH_NAME       VARCHAR2      -- batch reference
+  SAMPLING_POINT   VARCHAR2      -- where sample was taken
+  PRIORITY         NUMBER        -- priority level (higher = more urgent)
+  PROJECT_ID       VARCHAR2      -- project reference
+  LOCATION_ID      VARCHAR2      -- location reference
+  CUSTOMER_ID      VARCHAR2      -- customer reference
+  TESTS_TO_DO      NUMBER        -- total number of tests
+  ON_WKS           VARCHAR2      -- on worksheet flag
+  LOGIN_DATE       DATE          -- when logged into system
+  LOGIN_BY         VARCHAR2      -- who logged the sample
+  PREPARATION      VARCHAR2      -- sample preparation method
+  HAZARD           VARCHAR2      -- hazard information
+  ORIGINAL_SAMPLE  VARCHAR2      -- original sample reference
+  RE_SAMPLED       VARCHAR2      -- resampled flag
 
-TABLE: TEST_RESULTS
-  RESULT_ID        BIGINT        -- Primary key
-  SAMPLE_ID        VARCHAR(50)   -- FK to SAMPLES
-  TEST_CODE        VARCHAR(50)   -- Test identifier
-  TEST_NAME        VARCHAR(200)  -- Full test name
-  RESULT_VALUE     VARCHAR(500)  -- Result (can be numeric or text)
-  RESULT_STATUS    VARCHAR(50)   -- PASS, FAIL, PENDING, RETEST_REQUIRED
-  ANALYST_ID       VARCHAR(50)
-  TESTED_DATE      DATETIME
-  REVIEWED_DATE    DATETIME
-  REVIEWER_ID      VARCHAR(50)
-  LIMIT_LOW        DECIMAL(18,4)
-  LIMIT_HIGH       DECIMAL(18,4)
-  UNITS            VARCHAR(50)
+TABLE: TEST_TABLE   (test results table)
+  TEST_NUMBER      VARCHAR2      -- unique test identifier
+  ANALYSIS         VARCHAR2      -- analysis/test type name
+  SAMPLE           VARCHAR2      -- FK to SAMPLE_TABLE.ID_TEXT
+  STATUS           VARCHAR2      -- test status: 'U' unreported, 'A' authorised, 'X' cancelled
+  OLD_STATUS       VARCHAR2      -- previous status
+  DATE_STARTED     DATE          -- when test started
+  DATE_COMPLETED   DATE          -- when test completed
+  DATE_AUTHORISED  DATE          -- when test authorised
+  STARTER          VARCHAR2      -- who started the test
+  COMPLETER        VARCHAR2      -- who completed the test
+  AUTHORISER       VARCHAR2      -- who authorised the test
+  ON_SPEC          VARCHAR2      -- is result within spec? 'Y' or 'N'
+  VALIDATION_STATUS VARCHAR2     -- validation state
+  AUTHORISATION_COMMENT VARCHAR2 -- approval notes
+  TEST_PRIORITY    NUMBER        -- test priority
+  INSTRUMENT       VARCHAR2      -- instrument used
+  REPLICATE_TEST   VARCHAR2      -- replicate test reference
+  TEST_COUNT       NUMBER        -- number of test entries
+  WORKSHEET        VARCHAR2      -- worksheet reference
+  PREPARATION      VARCHAR2      -- preparation method
 
-TABLE: APPROVALS
-  APPROVAL_ID      BIGINT        -- Primary key
-  SAMPLE_ID        VARCHAR(50)   -- FK to SAMPLES
-  APPROVAL_STAGE   VARCHAR(100)  -- ANALYST_REVIEW, SUPERVISOR_APPROVAL, QA_SIGNOFF
-  APPROVER_ID      VARCHAR(50)
-  STATUS           VARCHAR(50)   -- PENDING, APPROVED, REJECTED, ESCALATED
-  REQUESTED_DATE   DATETIME
-  COMPLETED_DATE   DATETIME
-  COMMENTS         VARCHAR(1000)
-  PRIORITY         VARCHAR(20)
+TABLE: APPROVAL   (approval workflow table)
+  -- Contains approval workflow records
+  -- Join to SAMPLE_TABLE via sample ID
 
-TABLE: ANALYSTS
-  ANALYST_ID       VARCHAR(50)   -- Primary key
-  ANALYST_NAME     VARCHAR(200)
-  DEPARTMENT       VARCHAR(100)
-  EMAIL            VARCHAR(200)
-  IS_ACTIVE        BIT (1=active, 0=inactive)
-  ROLE             VARCHAR(100)  -- ANALYST, SENIOR_ANALYST, SUPERVISOR
-
-TABLE: AUDIT_TRAIL
-  AUDIT_ID         BIGINT
-  TABLE_NAME       VARCHAR(100)
-  RECORD_ID        VARCHAR(100)
-  ACTION           VARCHAR(50)   -- INSERT, UPDATE, DELETE
-  CHANGED_BY       VARCHAR(100)
-  CHANGE_DATE      DATETIME
-  OLD_VALUE        VARCHAR(MAX)
-  NEW_VALUE        VARCHAR(MAX)
+TABLE: ACCESS_LOG   (audit trail)
+TABLE: ACTIVITY_LOG (activity records)
 """
 
 NL_TO_SQL_PROMPT = """You are an Oracle SQL expert for a SampleManager LIMS database.
 Generate a safe, READ-ONLY Oracle SQL query (SELECT only).
 
-DATABASE ENGINE: {db_engine}
+DATABASE ENGINE: Oracle
 TODAY'S DATE: {today_date}
 
 {schema}
 
-STRICT ORACLE SYNTAX RULES:
-1. ONLY SELECT statements — NO INSERT, UPDATE, DELETE, DROP, CREATE, ALTER, EXEC
-2. Row limit: always end with FETCH FIRST 200 ROWS ONLY
-3. Oracle date functions ONLY:
-   - Today:          TRUNC(SYSDATE)
-   - Last 7 days:    SYSDATE - 7
-   - Last week:      SYSDATE - 7
-   - This month:     TRUNC(SYSDATE,'MM')
-   - Date compare:   TRUNC(RECEIVED_DATE) = TRUNC(SYSDATE)
-4. NEVER use: GETDATE(), DATEADD(), TOP N, LIMIT, ##, @variables
-5. String comparison: use single quotes only — WHERE STATUS = 'PENDING'
-6. All parentheses must be balanced — check every opening ( has a closing )
-7. No subquery without proper closing parenthesis
+CRITICAL ORACLE SYNTAX RULES:
+1. ONLY SELECT — NO INSERT, UPDATE, DELETE, DROP, CREATE, ALTER, EXEC
+2. ALWAYS end query with: FETCH FIRST 200 ROWS ONLY
+3. Oracle date syntax ONLY — NEVER use GETDATE(), DATEADD(), TOP N, LIMIT
+4. All parentheses MUST be balanced
+5. No SQL comments (--)
+6. Use single quotes for strings: STATUS = 'U'
 
-CORRECT ORACLE EXAMPLES:
--- Last week samples:
-SELECT SAMPLE_ID, SAMPLE_NAME, STATUS, RECEIVED_DATE
-FROM SAMPLES
-WHERE RECEIVED_DATE >= SYSDATE - 7
-ORDER BY RECEIVED_DATE DESC
+STATUS VALUES in SampleManager:
+  'U' = Unreported/Pending
+  'A' = Authorised/Completed
+  'X' = Cancelled
+  'C' = In progress
+
+DATE FUNCTIONS (Oracle only):
+  Today:           TRUNC(SYSDATE)
+  Last 7 days:     SYSDATE - 7
+  Last week:       TRUNC(SYSDATE) - 7
+  This month:      TRUNC(SYSDATE, 'MM')
+  Yesterday:       TRUNC(SYSDATE) - 1
+  Date column:     TRUNC(RECD_DATE) = TRUNC(SYSDATE)
+
+CORRECT ORACLE EXAMPLES — follow these exactly:
+
+Example 1 — Last week samples:
+SELECT ID_TEXT, SAMPLE_NAME, STATUS, PRODUCT, RECD_DATE, LOGIN_BY
+FROM SAMPLE_TABLE
+WHERE RECD_DATE >= SYSDATE - 7
+ORDER BY RECD_DATE DESC
 FETCH FIRST 200 ROWS ONLY
 
--- Pending samples today:
-SELECT SAMPLE_ID, STATUS, ANALYST_ID, PRIORITY
-FROM SAMPLES
-WHERE STATUS = 'PENDING'
-AND TRUNC(RECEIVED_DATE) = TRUNC(SYSDATE)
+Example 2 — Pending/unreported samples today:
+SELECT ID_TEXT, SAMPLE_NAME, STATUS, PRODUCT, PRIORITY, RECD_DATE
+FROM SAMPLE_TABLE
+WHERE STATUS = 'U'
+AND TRUNC(RECD_DATE) = TRUNC(SYSDATE)
+ORDER BY PRIORITY DESC
 FETCH FIRST 200 ROWS ONLY
 
--- Failed tests last 7 days:
-SELECT s.SAMPLE_ID, t.TEST_NAME, t.RESULT_STATUS, t.TESTED_DATE
-FROM TEST_RESULTS t
-JOIN SAMPLES s ON s.SAMPLE_ID = t.SAMPLE_ID
-WHERE t.RESULT_STATUS = 'FAIL'
-AND t.TESTED_DATE >= SYSDATE - 7
-ORDER BY t.TESTED_DATE DESC
+Example 3 — Failed/out-of-spec tests:
+SELECT t.TEST_NUMBER, t.ANALYSIS, t.SAMPLE, t.ON_SPEC, t.DATE_COMPLETED
+FROM TEST_TABLE t
+WHERE t.ON_SPEC = 'N'
+AND t.DATE_COMPLETED >= SYSDATE - 7
+ORDER BY t.DATE_COMPLETED DESC
+FETCH FIRST 200 ROWS ONLY
+
+Example 4 — Join samples and tests:
+SELECT s.ID_TEXT, s.PRODUCT, t.ANALYSIS, t.ON_SPEC, t.DATE_COMPLETED
+FROM SAMPLE_TABLE s
+JOIN TEST_TABLE t ON t.SAMPLE = s.ID_TEXT
+WHERE t.ON_SPEC = 'N'
+AND t.DATE_COMPLETED >= SYSDATE - 7
+ORDER BY t.DATE_COMPLETED DESC
+FETCH FIRST 200 ROWS ONLY
+
+Example 5 — Samples by product this month:
+SELECT ID_TEXT, SAMPLE_NAME, PRODUCT, STATUS, RECD_DATE
+FROM SAMPLE_TABLE
+WHERE RECD_DATE >= TRUNC(SYSDATE, 'MM')
+AND PRODUCT = 'Fuel Oil'
+ORDER BY RECD_DATE DESC
 FETCH FIRST 200 ROWS ONLY
 
 USER QUESTION: {user_question}
 
-Generate ONLY the Oracle SQL query. No markdown, no explanation, no comments:"""
+Generate ONLY the Oracle SQL. No markdown, no explanation, no comments, no backticks:"""
 
 
 RESULT_SUMMARY_PROMPT = """You are a laboratory data analyst. Summarize these query results clearly.
